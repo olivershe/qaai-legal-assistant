@@ -48,10 +48,64 @@ npm run dev
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [DIFC Corpus Setup](#difc-corpus-setup)
+- [Sharing for Internal Testing](#sharing-for-internal-testing)
 - [Development](#development)
-- [API Documentation](#api-documentation)
-- [Testing](#testing)
-- [Deployment](#deployment)
+
+## 🔗 Sharing for Internal Testing
+
+Need to share the app with your team for testing? Here are two easy options:
+
+### Option 1: Public Internet Access (Recommended)
+
+Uses ngrok to create a secure tunnel accessible from anywhere:
+
+```bash
+# Install ngrok first
+brew install ngrok  # macOS
+# or snap install ngrok  # Linux
+# or download from https://ngrok.com/download
+
+# Run the sharing script
+./scripts/share-local.sh
+```
+
+This will:
+- Start both API and web servers
+- Create a public HTTPS URL (e.g., `https://abc123.ngrok.io`)
+- Allow anyone with the URL to test the app
+- Keep running until you press Ctrl+C
+
+### Option 2: Local Network Access
+
+Share with team members on the same WiFi network:
+
+```bash
+./scripts/run-local-network.sh
+```
+
+This will:
+- Start servers accessible on your local network
+- Show URLs like `http://192.168.1.100:5173`
+- Allow team members on same WiFi to access the app
+- More secure (local network only)
+
+### Manual Setup
+
+If you prefer to run servers manually:
+
+```bash
+# Terminal 1: Start API
+source venv_linux/bin/activate
+python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000
+
+# Terminal 2: Start Web App  
+cd apps/web
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+Then share the appropriate URL with your team.
+
+## 💻 Development
 
 ## Features
 
