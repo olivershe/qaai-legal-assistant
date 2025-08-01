@@ -94,7 +94,8 @@ class ApiService {
     if (!response.ok) {
       throw new Error(`Failed to fetch vault projects: ${response.statusText}`)
     }
-    return response.json()
+    const data = await response.json()
+    return data.projects || []
   }
 
   async createVaultProject(name: string, visibility: 'private' | 'shared' = 'private'): Promise<VaultProject> {
@@ -108,7 +109,8 @@ class ApiService {
     if (!response.ok) {
       throw new Error(`Failed to create vault project: ${response.statusText}`)
     }
-    return response.json()
+    const data = await response.json()
+    return data.project
   }
 
   async uploadToVault(projectId: string, files: File[]): Promise<void> {

@@ -4,7 +4,6 @@ import { ProjectGrid } from './ProjectGrid'
 import { VaultProject } from '../../types'
 import { apiService } from '../../services/api'
 import { useFileUpload } from '../../hooks/useFileUpload'
-import { designProfileService } from '../../services/design-profiles'
 
 /**
  * VaultPage following vault.profile.json specifications exactly
@@ -46,10 +45,8 @@ export function VaultPage() {
     }
   })
 
-  // Apply vault profile design tokens on mount
-  useEffect(() => {
-    designProfileService.applyDesignVariables('vault').catch(console.error)
-  }, [])
+  // Note: Vault UI now uses assistant profile design tokens (consistent styling)
+  // No need to load separate vault profile since we're using shared design system
 
   // Load projects from backend
   const loadProjects = useCallback(async () => {
