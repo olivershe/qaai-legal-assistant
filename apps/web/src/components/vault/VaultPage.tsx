@@ -190,10 +190,11 @@ export function VaultPage() {
         <h1 
           className="text-h1 mb-2"
           style={{ 
-            color: 'var(--text)',
+            color: 'rgb(var(--text-primary))',
             fontSize: 'var(--font-size-h1)',
             lineHeight: 'var(--line-height-h1)',
-            fontWeight: '600'
+            fontWeight: '600',
+            fontFamily: 'var(--font-family)'
           }}
         >
           Vault
@@ -201,9 +202,10 @@ export function VaultPage() {
         <p 
           className="text-body"
           style={{ 
-            color: 'var(--text-2)',
+            color: 'rgb(var(--text-secondary))',
             fontSize: 'var(--font-size-body)',
-            lineHeight: 'var(--line-height-body)'
+            lineHeight: 'var(--line-height-body)',
+            fontFamily: 'var(--font-family)'
           }}
         >
           Store and review thousands of documents
@@ -215,9 +217,10 @@ export function VaultPage() {
         <div 
           className="p-4 rounded-lg border"
           style={{
-            backgroundColor: 'var(--destructive-bg, #fef2f2)',
-            borderColor: 'var(--destructive, #ef4444)',
-            color: 'var(--destructive, #ef4444)'
+            backgroundColor: '#FEF2F2',
+            borderColor: '#FECACA',
+            color: '#EF4444',
+            borderRadius: 'var(--radius-lg)'
           }}
         >
           {error}
@@ -248,30 +251,30 @@ export function VaultPage() {
         <div 
           className="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg border max-w-sm"
           style={{
-            backgroundColor: 'var(--bg-card)',
-            borderColor: 'var(--border)',
-            borderRadius: 'var(--radius-lg, 10px)',
+            backgroundColor: 'rgb(var(--bg-card))',
+            borderColor: 'rgb(var(--border-default))',
+            borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-lg)'
           }}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+            <span className="text-sm font-medium" style={{ color: 'rgb(var(--text-primary))' }}>
               Uploading files...
             </span>
-            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-xs" style={{ color: 'rgb(var(--text-muted))' }}>
               {Math.round(fileUpload.progress)}%
             </span>
           </div>
           
           <div 
             className="w-full bg-gray-200 rounded-full h-2 mb-2"
-            style={{ backgroundColor: 'var(--bg-subtle)' }}
+            style={{ backgroundColor: 'rgb(var(--bg-subtle))' }}
           >
             <div 
               className="h-2 rounded-full transition-all duration-300"
               style={{ 
                 width: `${fileUpload.progress}%`,
-                backgroundColor: 'var(--btn-bg)'
+                backgroundColor: 'rgb(var(--action-primary-bg))'
               }}
             />
           </div>
@@ -281,15 +284,15 @@ export function VaultPage() {
               <div key={file.id} className="flex items-center justify-between text-xs">
                 <span 
                   className="truncate flex-1 mr-2"
-                  style={{ color: 'var(--text-2)' }}
+                  style={{ color: 'rgb(var(--text-secondary))' }}
                 >
                   {file.file.name}
                 </span>
                 <span 
                   style={{ 
                     color: file.status === 'error' 
-                      ? 'var(--destructive, #ef4444)' 
-                      : 'var(--text-muted)' 
+                      ? '#EF4444' 
+                      : 'rgb(var(--text-muted))' 
                   }}
                 >
                   {file.status === 'completed' ? '✓' : 

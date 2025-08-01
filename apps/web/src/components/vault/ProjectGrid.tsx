@@ -64,7 +64,7 @@ export function ProjectGrid({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--border)' }}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'rgb(var(--border-default))' }}>
         </div>
       </div>
     )
@@ -87,20 +87,20 @@ export function ProjectGrid({
           style={{
             minWidth: '260px',
             minHeight: '160px',
-            backgroundColor: 'var(--bg-card)',
-            borderColor: 'var(--border)',
-            borderRadius: 'var(--radius-lg, 10px)',
+            backgroundColor: 'rgb(var(--bg-card))',
+            borderColor: 'rgb(var(--border-default))',
+            borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-sm)',
             padding: '16px'
           }}
           onDragOver={(e) => {
             e.preventDefault()
-            e.currentTarget.style.backgroundColor = 'var(--bg-tab-hover)'
-            e.currentTarget.style.borderColor = 'var(--border-focus)'
+            e.currentTarget.style.backgroundColor = 'rgb(var(--bg-tab-hover))'
+            e.currentTarget.style.borderColor = 'rgb(var(--border-focus))'
           }}
           onDragLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--bg-card)'
-            e.currentTarget.style.borderColor = 'var(--border)'
+            e.currentTarget.style.backgroundColor = 'rgb(var(--bg-card))'
+            e.currentTarget.style.borderColor = 'rgb(var(--border-default))'
           }}
           onDrop={handleNewProjectDrop}
           onClick={() => setShowCreateForm(true)}
@@ -115,14 +115,14 @@ export function ProjectGrid({
             <FolderPlus 
               size={24} 
               className="mb-3"
-              style={{ color: 'var(--icon-primary)' }}
+              style={{ color: 'rgb(var(--icon-primary))' }}
             />
             <h3 
               style={{
                 fontSize: 'var(--font-size-h2)',
                 lineHeight: 'var(--line-height-h2)',
                 fontWeight: '600',
-                color: 'var(--text)',
+                color: 'rgb(var(--text-primary))',
                 marginBottom: '8px'
               }}
             >
@@ -133,7 +133,7 @@ export function ProjectGrid({
               style={{
                 fontSize: 'var(--font-size-caption)',
                 lineHeight: 'var(--line-height-caption)',
-                color: 'var(--text-muted)'
+                color: 'rgb(var(--text-muted))'
               }}
             >
               Each project can contain up to 10,000 files
@@ -141,9 +141,9 @@ export function ProjectGrid({
             <div 
               className="px-3 py-1 rounded text-sm transition-colors"
               style={{
-                color: 'var(--text-2)',
+                color: 'rgb(var(--text-secondary))',
                 backgroundColor: 'transparent',
-                borderRadius: 'var(--radius-sm, 6px)'
+                borderRadius: 'var(--radius-sm)'
               }}
             >
               Create
@@ -154,7 +154,7 @@ export function ProjectGrid({
           <div className="absolute inset-2 border-2 border-dashed rounded-lg opacity-0 group-hover:opacity-50 transition-opacity pointer-events-none"
                style={{ borderColor: 'var(--border-focus)' }}>
             <div className="flex items-center justify-center h-full">
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-xs" style={{ color: 'rgb(var(--text-muted))' }}>
                 Drop files to create & upload
               </span>
             </div>
@@ -169,9 +169,9 @@ export function ProjectGrid({
             style={{
               minWidth: '240px',
               minHeight: '140px',
-              backgroundColor: dragOverProject === project.id ? 'var(--bg-tab-hover)' : 'var(--bg-card)',
-              borderColor: dragOverProject === project.id ? 'var(--border-focus)' : 'var(--border)',
-              borderRadius: 'var(--radius-lg, 10px)',
+              backgroundColor: dragOverProject === project.id ? 'rgb(var(--bg-tab-hover))' : 'rgb(var(--bg-card))',
+              borderColor: dragOverProject === project.id ? 'rgb(var(--border-focus))' : 'rgb(var(--border-default))',
+              borderRadius: 'var(--radius-lg)',
               boxShadow: 'var(--shadow-sm)',
               borderWidth: dragOverProject === project.id ? '2px' : '1px',
               padding: '16px'
@@ -213,11 +213,11 @@ export function ProjectGrid({
                   style={{
                     width: '48px',
                     height: '48px',
-                    backgroundColor: 'var(--bg-subtle)',
-                    borderRadius: 'var(--radius-md, 8px)'
+                    backgroundColor: 'rgb(var(--bg-subtle))',
+                    borderRadius: 'var(--radius-md)'
                   }}
                 >
-                  <Folder size={24} style={{ color: 'var(--icon-primary)' }} />
+                  <Folder size={24} style={{ color: 'rgb(var(--icon-primary))' }} />
                 </div>
                 
                 {/* Menu */}
@@ -228,7 +228,7 @@ export function ProjectGrid({
                       setActiveMenu(activeMenu === project.id ? null : project.id)
                     }}
                     className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded"
-                    style={{ color: 'var(--icon-muted)' }}
+                    style={{ color: 'rgb(var(--icon-muted))' }}
                     aria-label="Project menu"
                   >
                     <MoreVertical size={16} />
@@ -238,9 +238,9 @@ export function ProjectGrid({
                     <div 
                       className="absolute right-0 top-full mt-1 py-1 rounded shadow-lg border z-10"
                       style={{
-                        backgroundColor: 'var(--bg-card)',
-                        borderColor: 'var(--border)',
-                        borderRadius: 'var(--radius-md, 8px)',
+                        backgroundColor: 'rgb(var(--bg-card))',
+                        borderColor: 'rgb(var(--border-default))',
+                        borderRadius: 'var(--radius-md)',
                         boxShadow: 'var(--shadow-lg)',
                         minWidth: '120px'
                       }}
@@ -248,7 +248,7 @@ export function ProjectGrid({
                     >
                       <button 
                         className="w-full px-3 py-2 text-left text-sm hover:bg-opacity-50 flex items-center gap-2"
-                        style={{ color: 'var(--text)' }}
+                        style={{ color: 'rgb(var(--text-primary))' }}
                         role="menuitem"
                       >
                         <Eye size={14} />
@@ -256,7 +256,7 @@ export function ProjectGrid({
                       </button>
                       <button 
                         className="w-full px-3 py-2 text-left text-sm hover:bg-opacity-50 flex items-center gap-2"
-                        style={{ color: 'var(--text)' }}
+                        style={{ color: 'rgb(var(--text-primary))' }}
                         role="menuitem"
                       >
                         <Edit size={14} />
@@ -264,13 +264,13 @@ export function ProjectGrid({
                       </button>
                       <button 
                         className="w-full px-3 py-2 text-left text-sm hover:bg-opacity-50 flex items-center gap-2"
-                        style={{ color: 'var(--text)' }}
+                        style={{ color: 'rgb(var(--text-primary))' }}
                         role="menuitem"
                       >
                         <Share size={14} />
                         Share
                       </button>
-                      <hr style={{ borderColor: 'var(--border-muted)', margin: '4px 0' }} />
+                      <hr style={{ borderColor: 'rgb(var(--border-muted))', margin: '4px 0' }} />
                       <button 
                         className="w-full px-3 py-2 text-left text-sm hover:bg-opacity-50 flex items-center gap-2"
                         style={{ color: 'var(--destructive, #ef4444)' }}
@@ -303,9 +303,9 @@ export function ProjectGrid({
                 <span 
                   className="px-2 py-1 rounded text-xs capitalize"
                   style={{
-                    backgroundColor: project.visibility === 'shared' ? 'var(--bg-tab-selected)' : 'var(--bg-badge)',
-                    color: 'var(--text-2)',
-                    borderRadius: 'var(--radius-sm, 6px)'
+                    backgroundColor: project.visibility === 'shared' ? 'rgb(var(--bg-tab-selected))' : 'rgb(var(--bg-badge))',
+                    color: 'rgb(var(--text-secondary))',
+                    borderRadius: 'var(--radius-sm)'
                   }}
                 >
                   {project.visibility}
@@ -313,19 +313,19 @@ export function ProjectGrid({
                 <span 
                   style={{
                     fontSize: 'var(--font-size-caption)',
-                    color: 'var(--text-muted)'
+                    color: 'rgb(var(--text-muted))'
                   }}
                 >
                   {formatRelativeDate(project.updated_at)}
                 </span>
                 {project.document_count > 0 && (
                   <>
-                    <span style={{ color: 'var(--text-muted)' }}>•</span>
+                    <span style={{ color: 'rgb(var(--text-muted))' }}>•</span>
                     <span 
                       className="flex items-center gap-1"
                       style={{
                         fontSize: 'var(--font-size-caption)',
-                        color: 'var(--text-muted)'
+                        color: 'rgb(var(--text-muted))'
                       }}
                     >
                       <FileText size={12} />
@@ -348,10 +348,10 @@ export function ProjectGrid({
             {dragOverProject === project.id && (
               <div className="absolute inset-2 border-2 border-dashed rounded-lg flex items-center justify-center bg-opacity-50"
                    style={{ 
-                     borderColor: 'var(--border-focus)',
+                     borderColor: 'rgb(var(--border-focus))',
                      backgroundColor: 'var(--bg-subtle)'
                    }}>
-                <span className="text-sm font-medium" style={{ color: 'var(--text)' }}>
+                <span className="text-sm font-medium" style={{ color: 'rgb(var(--text-primary))' }}>
                   Drop files to upload
                 </span>
               </div>
@@ -366,7 +366,7 @@ export function ProjectGrid({
           <Folder 
             size={48} 
             className="mx-auto mb-4" 
-            style={{ color: 'var(--icon-muted)' }}
+            style={{ color: 'rgb(var(--icon-muted))' }}
           />
           <h3 
             className="mb-2"
@@ -377,7 +377,7 @@ export function ProjectGrid({
           >
             No projects yet
           </h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+          <p style={{ color: 'rgb(var(--text-muted))' }}>
             Create a new project or drag files here to get started.
           </p>
         </div>
@@ -389,7 +389,7 @@ export function ProjectGrid({
           <div 
             className="p-6 rounded-lg max-w-md w-full mx-4"
             style={{
-              backgroundColor: 'var(--bg-card)',
+              backgroundColor: 'rgb(var(--bg-card))',
               borderRadius: 'var(--radius-lg, 10px)',
               boxShadow: 'var(--shadow-lg)'
             }}
@@ -422,9 +422,9 @@ export function ProjectGrid({
                   onChange={(e) => setNewProjectName(e.target.value)}
                   className="w-full px-3 py-2 border rounded-md"
                   style={{
-                    backgroundColor: 'var(--bg-input)',
-                    borderColor: 'var(--border)',
-                    borderRadius: 'var(--radius-md, 8px)',
+                    backgroundColor: 'rgb(var(--bg-input))',
+                    borderColor: 'rgb(var(--border-default))',
+                    borderRadius: 'var(--radius-md)',
                     color: 'var(--text)'
                   }}
                   placeholder="Enter project name..."
@@ -447,9 +447,9 @@ export function ProjectGrid({
                   onChange={(e) => setNewProjectVisibility(e.target.value as 'private' | 'shared')}
                   className="w-full px-3 py-2 border rounded-md"
                   style={{
-                    backgroundColor: 'var(--bg-input)',
-                    borderColor: 'var(--border)',
-                    borderRadius: 'var(--radius-md, 8px)',
+                    backgroundColor: 'rgb(var(--bg-input))',
+                    borderColor: 'rgb(var(--border-default))',
+                    borderRadius: 'var(--radius-md)',
                     color: 'var(--text)'
                   }}
                 >
@@ -464,9 +464,9 @@ export function ProjectGrid({
                 onClick={() => setShowCreateForm(false)}
                 className="flex-1 px-4 py-2 rounded transition-colors"
                 style={{
-                  backgroundColor: 'var(--bg-subtle)',
-                  color: 'var(--text-2)',
-                  borderRadius: 'var(--radius-md, 8px)'
+                  backgroundColor: 'rgb(var(--bg-subtle))',
+                  color: 'rgb(var(--text-secondary))',
+                  borderRadius: 'var(--radius-md)'
                 }}
               >
                 Cancel
@@ -476,9 +476,9 @@ export function ProjectGrid({
                 disabled={!newProjectName.trim()}
                 className="flex-1 px-4 py-2 rounded transition-colors disabled:opacity-50"
                 style={{
-                  backgroundColor: 'var(--btn-bg)',
-                  color: 'var(--btn-text)',
-                  borderRadius: 'var(--radius-md, 8px)'
+                  backgroundColor: 'rgb(var(--action-primary-bg))',
+                  color: 'rgb(var(--action-primary-text))',
+                  borderRadius: 'var(--radius-md)'
                 }}
               >
                 Create

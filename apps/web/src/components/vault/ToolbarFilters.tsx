@@ -60,7 +60,7 @@ export function ToolbarFilters({
     <div 
       className="flex items-center justify-between py-2 border-b"
       style={{ 
-        borderBottomColor: 'var(--border-muted)',
+        borderBottomColor: 'rgb(var(--border-muted))',
         paddingTop: '8px',
         paddingBottom: '8px',
         gap: '12px'
@@ -71,8 +71,8 @@ export function ToolbarFilters({
         <div 
           className="flex items-center gap-1 p-1 rounded-full"
           style={{ 
-            backgroundColor: 'var(--bg-subtle)',
-            borderRadius: 'var(--radius-pill, 999px)'
+            backgroundColor: 'rgb(var(--bg-subtle))',
+            borderRadius: 'var(--radius-pill)'
           }}
           role="tablist"
           aria-label="Project visibility filter"
@@ -86,15 +86,15 @@ export function ToolbarFilters({
                 onClick={() => onFilterChange(segment.id)}
                 className="px-4 py-2 rounded-full text-sm transition-colors font-medium"
                 style={{
-                  backgroundColor: isSelected ? 'var(--bg-tab-selected)' : 'transparent',
-                  color: isSelected ? 'var(--text)' : 'var(--text-2)',
-                  borderRadius: 'var(--radius-pill, 999px)',
+                  backgroundColor: isSelected ? 'rgb(var(--bg-tab-selected))' : 'transparent',
+                  color: isSelected ? 'rgb(var(--text-primary))' : 'rgb(var(--text-secondary))',
+                  borderRadius: 'var(--radius-pill)',
                   fontSize: 'var(--font-size-body)',
                   minWidth: '80px'
                 }}
                 onMouseEnter={(e) => {
                   if (!isSelected) {
-                    e.currentTarget.style.backgroundColor = 'var(--bg-tab-hover)'
+                    e.currentTarget.style.backgroundColor = 'rgb(var(--bg-tab-hover))'
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -121,9 +121,9 @@ export function ToolbarFilters({
                 key={`${key}:${value}`}
                 className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs"
                 style={{
-                  backgroundColor: 'var(--bg-badge)',
-                  color: 'var(--text-2)',
-                  borderRadius: 'var(--radius-pill, 999px)',
+                  backgroundColor: 'rgb(var(--bg-badge))',
+                  color: 'rgb(var(--text-secondary))',
+                  borderRadius: 'var(--radius-pill)',
                   fontSize: 'var(--font-size-caption)'
                 }}
               >
@@ -151,7 +151,7 @@ export function ToolbarFilters({
             size={16} 
             className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
             style={{ 
-              color: searchFocused || searchQuery ? 'var(--icon-primary)' : 'var(--icon-muted)',
+              color: searchFocused || searchQuery ? 'rgb(var(--icon-primary))' : 'rgb(var(--icon-muted))',
               transition: 'color var(--timing-fast, 120ms)'
             }}
           />
@@ -176,13 +176,13 @@ export function ToolbarFilters({
             style={{
               width: '320px',
               height: '36px',
-              backgroundColor: 'var(--bg-input)',
-              borderColor: searchFocused ? 'var(--border-focus)' : 'var(--border)',
-              borderRadius: 'var(--radius-md, 8px)',
-              color: 'var(--text)',
+              backgroundColor: 'rgb(var(--bg-input))',
+              borderColor: searchFocused ? 'rgb(var(--border-focus))' : 'rgb(var(--border-default))',
+              borderRadius: 'var(--radius-md)',
+              color: 'rgb(var(--text-primary))',
               fontSize: 'var(--font-size-body)',
               outline: 'none',
-              boxShadow: searchFocused ? '0 0 0 1px var(--border-focus)' : 'none'
+              boxShadow: searchFocused ? '0 0 0 1px rgb(var(--border-focus))' : 'none'
             }}
             disabled={loading}
             aria-label="Search projects"
@@ -194,7 +194,7 @@ export function ToolbarFilters({
             <button
               onClick={clearSearch}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-opacity-50 transition-colors"
-              style={{ color: 'var(--icon-muted)' }}
+              style={{ color: 'rgb(var(--icon-muted))' }}
               aria-label="Clear search"
               tabIndex={0}
             >
@@ -208,7 +208,7 @@ export function ToolbarFilters({
           id="search-help"
           className="absolute top-full left-0 mt-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
           style={{ 
-            color: 'var(--text-muted)',
+            color: 'rgb(var(--text-muted))',
             fontSize: 'var(--font-size-caption)'
           }}
         >
@@ -219,7 +219,7 @@ export function ToolbarFilters({
         {loading && (
           <div 
             className="absolute right-10 top-1/2 transform -translate-y-1/2"
-            style={{ color: 'var(--icon-muted)' }}
+            style={{ color: 'rgb(var(--icon-muted))' }}
           >
             <div className="animate-spin rounded-full h-4 w-4 border-b border-current"></div>
           </div>
@@ -253,9 +253,9 @@ export function SearchSuggestions({
     <div 
       className="absolute top-full left-0 right-0 mt-1 py-2 rounded-md border shadow-lg z-10"
       style={{
-        backgroundColor: 'var(--bg-card)',
-        borderColor: 'var(--border)',
-        borderRadius: 'var(--radius-md, 8px)',
+        backgroundColor: 'rgb(var(--bg-card))',
+        borderColor: 'rgb(var(--border-default))',
+        borderRadius: 'var(--radius-md)',
         boxShadow: 'var(--shadow-lg)'
       }}
     >
@@ -264,7 +264,7 @@ export function SearchSuggestions({
           key={index}
           onClick={() => onSelect(suggestion.value)}
           className="w-full px-3 py-2 text-left text-sm hover:bg-opacity-50 transition-colors"
-          style={{ color: 'var(--text)' }}
+          style={{ color: 'rgb(var(--text-primary))' }}
         >
           <div className="font-medium">{suggestion.label}</div>
           <div 
