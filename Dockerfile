@@ -18,9 +18,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY apps/ apps/
 COPY examples/ examples/
-COPY data/ data/
 
-# Create necessary directories
+# Create necessary directories (data/ is ignored by git)
 RUN mkdir -p data/files data/index logs
 
 # Expose port
