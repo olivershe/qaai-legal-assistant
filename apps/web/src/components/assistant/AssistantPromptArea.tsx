@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Download, Save, Paperclip, Layers } from 'lucide-react'
+import { useSSEStream } from '../../hooks/useSSEStream'
+import { apiService } from '../../services/api'
 
 interface AssistantPromptAreaProps {
   mode: 'assist' | 'draft'
@@ -12,7 +14,24 @@ interface AssistantPromptAreaProps {
 export function AssistantPromptArea({ mode }: AssistantPromptAreaProps) {
   const [prompt, setPrompt] = useState('')
   const [attachments, setAttachments] = useState<File[]>([])
+  const [response, setResponse] = useState('')
+  const [thinkingStates, setThinkingStates] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  const { isStreaming, startStream, stopStream, error } = useSSEStream({
+    onThinkingState: (state) => {
+      setThinkingStates(prev => [...prev, state.label])
+    },
+    onTextChunk: (chunk) => {
+      setResponse(prev => prev + chunk.text)
+    },
+    onDone: (done) => {
+      console.log('Stream completed:', done)
+    },
+    onError: (error) => {
+      console.error('Stream error:', error)
+    }
+  })
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -20,9 +39,33 @@ export function AssistantPromptArea({ mode }: AssistantPromptAreaProps) {
   }
 
   const handleSubmit = () => {
-    if (prompt.trim()) {
-      console.log('Submit:', { mode, prompt, attachments })
-      // TODO: Implement SSE streaming
+    if (prompt.trim() && !isStreaming) {
+      // Clear previous response
+      setResponse('')
+      setThinkingStates([])
+      
+      // Prepare query
+      const query = {
+        mode,
+        prompt,
+        knowledge: {
+          jurisdiction: 'DIFC' as const,
+          sources: ['DIFC_LAWS', 'DFSA_RULEBOOK', 'DIFC_COURTS_RULES', 'VAULT']
+        },
+        attachments: attachments.map(f => f.name) // TODO: Upload files and get IDs
+      }
+      
+      // Start SSE stream
+      startStream(
+        apiService.getAssistantStreamUrl(query), 
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(query)
+        }
+      )
     }
   }
 
@@ -187,6 +230,101 @@ export function AssistantPromptArea({ mode }: AssistantPromptAreaProps) {
         </div>
       )}
 
+      {/* Response Area */}
+      {(isStreaming || response || thinkingStates.length > 0 || error) && (
+        <div 
+          className="border-t pt-4 space-y-3"
+          style={{
+            borderColor: 'rgb(var(--border-default))',
+            marginTop: 'var(--spacing-4)',
+            paddingTop: 'var(--spacing-4)'
+          }}
+        >
+          {/* Thinking States */}
+          {thinkingStates.length > 0 && (
+            <div className="space-y-1">
+              {thinkingStates.map((state, index) => (
+                <div 
+                  key={index}
+                  className="text-sm px-2 py-1 rounded"
+                  style={{
+                    backgroundColor: 'rgb(var(--bg-subtle))',
+                    color: 'rgb(var(--text-secondary))',
+                    fontSize: 'var(--font-size-caption)',
+                    fontFamily: 'var(--font-family)'
+                  }}
+                >
+                  💭 {state}
+                </div>
+              ))}
+              {isStreaming && (
+                <div 
+                  className="text-sm px-2 py-1 rounded animate-pulse"
+                  style={{
+                    backgroundColor: 'rgb(var(--bg-subtle))',
+                    color: 'rgb(var(--text-secondary))',
+                    fontSize: 'var(--font-size-caption)',
+                    fontFamily: 'var(--font-family)'
+                  }}
+                >
+                  💭 Thinking...
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Response */}
+          {response && (
+            <div
+              className="prose max-w-none"
+              style={{
+                color: 'rgb(var(--text-primary))',
+                fontSize: 'var(--font-size-body)',
+                lineHeight: 'var(--line-height-body)',
+                fontFamily: 'var(--font-family)'
+              }}
+            >
+              <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
+                {response}
+              </pre>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div
+              className="text-red-600 text-sm px-3 py-2 rounded"
+              style={{
+                backgroundColor: '#FEF2F2',
+                border: '1px solid #FECACA'
+              }}
+            >
+              Error: {error}
+            </div>
+          )}
+
+          {/* Loading indicator */}
+          {isStreaming && (
+            <div className="flex items-center gap-2 text-sm">
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse"
+                style={{ backgroundColor: 'rgb(var(--action-primary-bg))' }}
+              />
+              <span style={{ color: 'rgb(var(--text-secondary))' }}>
+                QaAI is responding...
+              </span>
+              <button
+                onClick={stopStream}
+                className="ml-auto text-xs px-2 py-1 rounded hover:bg-gray-100"
+                style={{ color: 'rgb(var(--text-muted))' }}
+              >
+                Stop
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex items-center justify-between pt-2">
         {/* Left Actions */}
@@ -238,32 +376,32 @@ export function AssistantPromptArea({ mode }: AssistantPromptAreaProps) {
         {/* Right Action - Ask QaAI Button */}
         <button
           onClick={handleSubmit}
-          disabled={!prompt.trim()}
+          disabled={!prompt.trim() || isStreaming}
           className="px-4 py-2 rounded font-medium transition-colors disabled:opacity-50"
           style={{
             height: '36px',
-            backgroundColor: prompt.trim() ? 'rgb(var(--action-primary-bg))' : 'rgb(var(--bg-subtle))',
-            color: prompt.trim() ? 'rgb(var(--action-primary-text))' : 'rgb(var(--text-muted))',
+            backgroundColor: (prompt.trim() && !isStreaming) ? 'rgb(var(--action-primary-bg))' : 'rgb(var(--bg-subtle))',
+            color: (prompt.trim() && !isStreaming) ? 'rgb(var(--action-primary-text))' : 'rgb(var(--text-muted))',
             borderRadius: 'var(--radius-md)',
             fontSize: 'var(--font-size-body)',
             fontFamily: 'var(--font-family)',
             border: 'none',
-            cursor: prompt.trim() ? 'pointer' : 'not-allowed',
+            cursor: (prompt.trim() && !isStreaming) ? 'pointer' : 'not-allowed',
             paddingLeft: 'var(--spacing-8)',
             paddingRight: 'var(--spacing-8)'
           }}
           onMouseEnter={(e) => {
-            if (prompt.trim()) {
+            if (prompt.trim() && !isStreaming) {
               e.currentTarget.style.backgroundColor = 'rgb(var(--action-primary-hover))'
             }
           }}
           onMouseLeave={(e) => {
-            if (prompt.trim()) {
+            if (prompt.trim() && !isStreaming) {
               e.currentTarget.style.backgroundColor = 'rgb(var(--action-primary-bg))'
             }
           }}
         >
-          Ask QaAI
+          {isStreaming ? 'Processing...' : 'Ask QaAI'}
         </button>
       </div>
 
