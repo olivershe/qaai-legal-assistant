@@ -1,0 +1,54 @@
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+python-dotenv==1.0.0
+
+# Database and async support
+aiosqlite==0.19.0
+sqlalchemy[asyncio]==2.0.23
+
+# Pydantic and validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# AI and ML dependencies
+openai>=1.10.0,<2.0.0
+anthropic>=0.57.0,<1.0.0
+langchain>=0.1.0,<0.3.0
+langgraph>=0.0.26,<0.3.0
+langchain-openai>=0.0.5,<0.2.0
+langchain-anthropic>=0.1.0,<0.2.0
+
+# Vector search and embeddings
+faiss-cpu==1.7.4
+sentence-transformers==2.2.2
+
+# Document processing
+pypdf==3.17.4
+beautifulsoup4==4.12.2
+
+# SSE streaming
+sse-starlette==1.8.2
+
+# HTTP client
+httpx==0.25.2
+aiohttp==3.9.1
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Code quality
+ruff==0.1.8
+mypy==1.7.1
+black==23.11.0
+
+# Type stubs - install latest compatible version
+
+# Utility libraries
+tqdm==4.66.1
+numpy==1.25.2
+typing-extensions==4.8.0

@@ -1,0 +1,71 @@
+# Prometheus configuration for QaAI monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'qaai-dev'
+    replica: 'prometheus-1'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Rule files
+rule_files: []
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # QaAI API monitoring
+  - job_name: 'qaai-api'
+    static_configs:
+      - targets: ['qaai-api:8000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+
+  # QaAI Web frontend monitoring
+  - job_name: 'qaai-web'
+    static_configs:
+      - targets: ['qaai-web:3000']
+    scrape_interval: 30s
+    metrics_path: /health
+    scrape_timeout: 5s
+
+  # Redis monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+    metrics_path: /metrics
+    scrape_timeout: 5s
+
+  # PostgreSQL monitoring (when enabled)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+    scrape_timeout: 5s
+
+  # System metrics (if node_exporter is added)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+# Remote write configuration (for production)
+# remote_write:
+#   - url: "https://your-remote-prometheus/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"

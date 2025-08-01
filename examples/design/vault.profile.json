@@ -1,0 +1,146 @@
+{
+    "meta": {
+      "title": "QaAI Vault – UI Design System Profile",
+      "purpose": "Replicate the Vault UI using the same tokens/colors/typography as the Assistant profile.",
+      "source_image": "sandbox:/mnt/data/IMG_2918.jpeg",
+      "observed_on": "2025-07-27",
+      "relationship_to_assistant_profile": "Use the exact same theme tokens (colors, typography, radii, shadows, spacing)."
+    },
+    "style_inheritance": {
+      "colors": "inherit from Assistant profile {colors.semantic.*}",
+      "typography": "inherit from Assistant profile {typography.scale.*}",
+      "radii": "inherit",
+      "shadows": "inherit",
+      "spacing": "inherit",
+      "design_language_reminder": [
+        "neutral monochrome palette",
+        "subtle borders (#E9E8E7) and lots of whitespace",
+        "rounded corners (md–lg) and soft shadows",
+        "hierarchy via size/weight rather than strong color",
+        "card-based grid for projects"
+      ]
+    },
+    "layout": {
+      "app_shell": {
+        "sidebar": {
+          "width": 256,
+          "borderRight": "{colors.semantic.border.default}",
+          "items": [
+            { "label": "Assistant", "icon": "MessageSquare" },
+            { "label": "Vault", "icon": "Folder", "active": true },
+            { "label": "Workflows", "icon": "Workflow" },
+            { "label": "Workflow Builder", "icon": "Wrench" },
+            { "label": "History", "icon": "Clock" },
+            { "label": "Library", "icon": "Library" },
+            { "label": "Guidance", "icon": "BookOpen" }
+          ],
+          "footer": [
+            { "label": "Settings", "icon": "Settings" },
+            { "label": "Help", "icon": "HelpCircle" },
+            { "label": "user@domain.tld", "icon": "User", "variant": "muted" }
+          ]
+        },
+        "content": { "maxWidth": 1180, "paddingX": 24, "paddingY": 24 }
+      }
+    },
+    "components": {
+      "PageHeader": {
+        "title": { "text": "Vault", "style": "h1" },
+        "subtitle": { "text": "Store and review thousands of documents", "style": "body", "color": "text.secondary" },
+        "actions": []
+      },
+      "ToolbarFilters": {
+        "container": { "layout": "row", "gap": 12, "align": "center", "paddingY": 8, "borderBottom": "{colors.semantic.border.muted}" },
+        "segments": {
+          "type": "segmented",
+          "items": [
+            { "id": "all", "label": "All", "selected": true },
+            { "id": "private", "label": "Private" },
+            { "id": "shared", "label": "Shared" }
+          ],
+          "styles": {
+            "radius": "pill",
+            "selectedBg": "{colors.semantic.bg.tab.selected}",
+            "unselectedBg": "transparent",
+            "textSelected": "{colors.semantic.text.primary}",
+            "textUnselected": "{colors.semantic.text.secondary}"
+          }
+        },
+        "search": {
+          "placeholder": "Search",
+          "icon": "Search",
+          "width": 320,
+          "style": { "bg": "{colors.semantic.bg.input}", "border": "{colors.semantic.border.default}", "radius": "md", "paddingX": 12, "height": 36 }
+        }
+      },
+      "NewProjectCard": {
+        "position": "first_in_grid",
+        "size": { "minWidth": 260, "minHeight": 160 },
+        "style": { "bg": "{colors.semantic.bg.card}", "border": "{colors.semantic.border.default}", "radius": "lg", "shadow": "sm", "padding": 16 },
+        "icon": { "name": "FolderPlus", "size": 24, "color": "{colors.semantic.icon.primary}" },
+        "title": "New project",
+        "caption": "Each project can contain up to 10,000 files",
+        "cta": { "label": "Create", "variant": "ghost" },
+        "interactions": { "hoverShadow": "md", "keyboard": "Enter to create", "drop": "Drop files to create & upload" }
+      },
+      "ProjectGrid": {
+        "layout": { "columns": 5, "gap": 16, "rowGap": 16 },
+        "paddingTop": 16,
+        "emptyState": { "icon": "Folder", "title": "No projects yet", "helpText": "Create a new project or drag files here to get started." }
+      },
+      "ProjectCard": {
+        "size": { "minWidth": 240, "minHeight": 140 },
+        "style": { "bg": "{colors.semantic.bg.card}", "border": "{colors.semantic.border.default}", "radius": "lg", "shadow": "sm", "padding": 16 },
+        "thumbnail": { "variant": "folder", "icon": "Folder", "bg": "{colors.semantic.bg.subtle}", "radius": "md", "size": 48 },
+        "title_style": { "style": "h2" },
+        "subtitle_style": { "style": "caption", "color": "text.muted" },
+        "metadata_line": {
+          "chips": [
+            { "type": "visibility", "values": ["Private", "Shared"], "variant": "subtle" },
+            { "type": "updatedAt", "format": "relative" }
+          ],
+          "indicator": { "type": "dot", "color": "#1F7AE0", "meaning": "recent or attention" }
+        },
+        "menu": {
+          "trigger": "kebab",
+          "items": [
+            { "id": "open", "label": "Open" },
+            { "id": "rename", "label": "Rename" },
+            { "id": "share", "label": "Share" },
+            { "id": "delete", "label": "Delete", "destructive": true }
+          ]
+        },
+        "interactions": { "hoverShadow": "md", "focusRing": "{interaction.focus_ring}", "selection": { "mode": "single", "aria": ["aria-selected"] } }
+      },
+      "FooterUploadDock": { "visible": false, "description": "Optional: sticky bottom bar for background uploads and retry controls" }
+    },
+    "data_models": {
+      "Project": { "id": "uuid", "name": "string", "visibility": "private|shared", "updatedAt": "ISO8601", "documentCount": "number", "owner": "string", "badges": ["recent", "starred", "attention"], "thumbnail": { "type": "folder|stack|custom", "url": "string|null" } },
+      "SearchState": { "query": "string", "filters": { "visibility": "all|private|shared" }, "sort": "recent|name|size|owner" }
+    },
+    "a11y": {
+      "keyboard_navigation": true,
+      "min_tap_target_px": 40,
+      "aria_patterns": { "grid": ["role=grid", "aria-rowcount", "aria-colcount"], "card": ["role=gridcell", "aria-label", "aria-selected"], "menu": ["role=menu", "role=menuitem"] },
+      "focus_visible_style": "{interaction.focus_ring}",
+      "contrast_target": "WCAG AA"
+    },
+    "copy": {
+      "header_subtitle": "Store and review thousands of documents",
+      "segments": { "all": "All", "private": "Private", "shared": "Shared" },
+      "search_placeholder": "Search",
+      "new_project_title": "New project",
+      "new_project_caption": "Each project can contain up to 10,000 files",
+      "card_menu": { "open": "Open", "rename": "Rename", "share": "Share", "delete": "Delete" }
+    },
+    "example_structure_tree": {
+      "VaultPage": {
+        "children": [
+          { "PageHeader": ["Title", "Subtitle"] },
+          { "ToolbarFilters": ["Segments", "Search"] },
+          { "ProjectGrid": ["NewProjectCard", "ProjectCard*"] }
+        ]
+      }
+    }
+  }
+  

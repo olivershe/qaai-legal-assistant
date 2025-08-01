@@ -1,0 +1,181 @@
+{
+    "meta": {
+      "title": "Workflow – Draft from Template (UI Design System Profile)",
+      "purpose": "Replicate QaAI’s workflow UI (example: Draft from Template) in a React app, reusing the tokens/colors/typography of the Assistant/Vault profiles.",
+      "source_images": ["sandbox:/mnt/data/IMG_2924.jpeg", "sandbox:/mnt/data/IMG_2923.jpeg"],
+      "observed_on": "2025-07-27",
+      "type": "workflow",
+      "inherits_from": ["QaAI Assistant – UI Design System Profile", "QaAI Vault – UI Design System Profile"],
+      "notes": [
+        "This JSON represents a WORKFLOW screen/flow. The screenshots show both the inline workflow page and the initial intro/preview dialog.",
+        "Use the exact same style tokens and palette as the Assistant/Vault profiles; only structure/components differ."
+      ]
+    },
+    "style_inheritance": {
+      "colors": "inherit {colors.semantic.*}",
+      "typography": "inherit {typography.scale.*}",
+      "radii": "inherit",
+      "shadows": "inherit",
+      "spacing": "inherit",
+      "design_language_reminder": [
+        "light neutral UI, subtle borders (#E9E8E7), generous whitespace",
+        "soft corner radii (md–lg) and light shadows",
+        "visible ‘thinking states’ and step-by-step transparency"
+      ]
+    },
+    "layout": {
+      "app_shell": {
+        "sidebar": { "width": 256, "active_item": "Workflows", "items": ["Assistant", "Vault", "Workflows", "Workflow Builder", "History", "Library", "Guidance"] },
+        "content": { "maxWidth": 1120, "paddingX": 24, "paddingY": 24 }
+      }
+    },
+    "components": {
+      "WorkflowHeader": {
+        "breadcrumbs": [{ "label": "Assistant", "href": "/assistant" }, { "label": "Workflows", "href": "/workflows" }],
+        "title": { "text": "Draft from Template", "style": "h1" },
+        "badge": { "text": "WORKFLOW", "variant": "neutral" },
+        "actions": [
+          { "id": "newThread", "label": "New thread", "variant": "ghost" },
+          { "id": "share", "label": "Share", "variant": "ghost" },
+          { "id": "export", "label": "Export", "variant": "ghost" }
+        ]
+      },
+      "WorkflowIntroDialog": {
+        "kind": "modal",
+        "size": { "width": 880, "maxWidth": "90vw" },
+        "style": { "bg": "{colors.semantic.bg.card}", "radius": "xl", "shadow": "lg", "padding": 20 },
+        "leftPane": {
+          "title": "Draft from Template",
+          "sections": [
+            {
+              "heading": "About this workflow",
+              "body": "Upload a template (.docx) and context documents. The workflow generates a redlined draft with suggested edits. Note: filling tables and applying significant footnotes are currently a limitation.",
+              "variant": "muted"
+            },
+            { "heading": "Practice area", "value": "General", "variant": "key-value" },
+            {
+              "heading": "Documents needed to start this workflow",
+              "items": ["An information source (docx | supported file up to 20 MB)"],
+              "variant": "checklist"
+            }
+          ],
+          "footer": { "left": "3 steps", "right": null }
+        },
+        "rightPane": { "type": "DocumentPreview", "thumbnail_aspect": "A4/Letter", "border": "{colors.semantic.border.default}", "radius": "md" },
+        "primaryAction": { "id": "continue", "label": "Continue", "variant": "solid-neutral" }
+      },
+      "WorkflowSteps": {
+        "style": { "gap": 24 },
+        "steps": [
+          {
+            "id": "uploadTemplate",
+            "icon": "H",
+            "title": "Please upload the template you would like QaAI to edit.",
+            "description": "Note that filling in tables and applying significant footnotes are currently a limitation and not fully supported at this time.",
+            "control": { "component": "Dropzone", "accept": [".docx"], "multiple": false, "maxSizeMB": 20, "placeholder": "Drag and drop template here", "secondaryButton": { "label": "Choose file" } },
+            "attachments_list": true
+          },
+          {
+            "id": "uploadReferences",
+            "icon": "H",
+            "title": "Please upload the documents you would like QaAI to reference when editing the template.",
+            "control": {
+              "component": "Dropzone",
+              "accept": [".pdf", ".docx", ".doc", ".txt", ".md", ".pptx", ".xlsx", ".csv", ".eml"],
+              "multiple": true,
+              "maxFiles": 10,
+              "maxTotalSizeMB": 200,
+              "placeholder": "Drag and drop files here",
+              "secondaryButton": { "label": "Choose file" },
+              "caption": "Supported types: CSV, Email, Excel, PDF, PowerPoint, Text, Word (.docx). Uploaded up to 10 files."
+            },
+            "attachments_list": true
+          },
+          {
+            "id": "options",
+            "icon": "Sliders",
+            "title": "Configure drafting options (optional)",
+            "controls": [
+              { "component": "Select", "label": "Tone & style", "options": ["Neutral", "Firm standard", "Client-friendly"] },
+              { "component": "Text", "label": "Key instructions", "placeholder": "E.g., align to precedent X; keep defined terms unchanged." },
+              { "component": "Toggle", "label": "Track changes in output", "default": true }
+            ]
+          }
+        ],
+        "footer": { "right": { "component": "Button", "label": "Send", "variant": "solid-neutral", "size": "md" } }
+      },
+      "AttachmentsList": {
+        "item": { "icon": "File", "meta": ["name", "type", "size"], "actions": [{ "id": "preview", "icon": "Eye" }, { "id": "remove", "icon": "Trash" }] }
+      },
+      "ThinkingStates": {
+        "visible_during_run": true,
+        "presentation": "stepwise",
+        "items": ["Parsing template", "Reading references", "Drafting with legal style", "Generating redlines", "Preparing citations"],
+        "style": { "bg": "{colors.semantic.bg.subtle}", "border": "{colors.semantic.border.muted}", "radius": "md", "padding": 12 }
+      },
+      "ResultActions": {
+        "buttons": [
+          { "id": "openInEditor", "label": "Open in Draft Editor", "variant": "primary" },
+          { "id": "share", "label": "Share", "variant": "ghost" },
+          { "id": "exportWord", "label": "Export (.docx with tracked changes)", "variant": "ghost" },
+          { "id": "saveToVault", "label": "Save to Vault", "variant": "ghost" }
+        ]
+      }
+    },
+    "data_models": {
+      "WorkflowRunConfig": {
+        "templateDoc": { "id": "uuid", "name": "string", "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "sizeBytes": "number" },
+        "referenceDocs": [{ "id": "uuid", "name": "string", "mime": "string", "sizeBytes": "number" }],
+        "options": { "tone": "Neutral|Firm standard|Client-friendly", "instructions": "string", "trackChanges": "boolean" },
+        "context": { "vaultProjectId": "uuid|null", "knowledgeSources": ["edgar", "eur-lex", "firm-precedents"] }
+      },
+      "WorkflowRunState": {
+        "status": "idle|uploading|validating|running|review|completed|error",
+        "thinkingStates": [{ "label": "string", "startedAt": "ISO8601", "endedAt": "ISO8601|null" }],
+        "output": {
+          "docId": "uuid|null",
+          "previewUrl": "string|null",
+          "citations": [{ "id": "uuid", "label": "string", "url": "string", "pages": [1, 2] }]
+        }
+      }
+    },
+    "a11y": {
+      "keyboard_navigation": true,
+      "min_tap_target_px": 40,
+      "aria_patterns": {
+        "wizard": ["role=region", "aria-labelledby=WorkflowHeader"],
+        "stepper": ["role=list", "role=listitem"],
+        "dropzone": ["role=button", "aria-describedby"],
+        "dialog": ["role=dialog", "aria-modal=true", "aria-labelledby"]
+      },
+      "focus_visible_style": "{interaction.focus_ring}",
+      "contrast_target": "WCAG AA"
+    },
+    "copy": {
+      "header_actions": { "newThread": "New thread", "share": "Share", "export": "Export" },
+      "steps": {
+        "uploadTemplate": {
+          "title": "Please upload the template you would like QaAI to edit.",
+          "limitation": "Note that filling in tables and applying significant footnotes are currently a limitation and not fully supported at this time."
+        },
+        "uploadReferences": {
+          "title": "Please upload the documents you would like QaAI to reference when editing the template.",
+          "caption": "Supported types: CSV, Email, Excel, PDF, PowerPoint, Text, Word (.docx). Uploaded up to 10 files."
+        },
+        "options": { "title": "Configure drafting options (optional)" }
+      },
+      "buttons": { "continue": "Continue", "send": "Send", "chooseFile": "Choose file" }
+    },
+    "example_structure_tree": {
+      "WorkflowPage": {
+        "children": [
+          { "WorkflowHeader": ["Breadcrumbs", "Title", "Badge", "Actions"] },
+          { "WorkflowIntroDialog (optional on first use)": ["LeftPane", "RightPane", "Continue"] },
+          { "WorkflowSteps": ["Step: Upload Template", "Step: Upload References", "Step: Options", "Footer: Send"] },
+          { "ThinkingStates (during run)": [] },
+          { "ResultActions (after run)": [] }
+        ]
+      }
+    }
+  }
+  

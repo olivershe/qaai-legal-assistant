@@ -1,0 +1,86 @@
+DIFC Data Protection Law No. 5 of 2020
+
+Part 1 - General
+
+Article 1 - Short Title
+This Law may be cited as the DIFC Data Protection Law 2020.
+
+Article 2 - Definitions
+In this Law:
+"Data Subject" means an identified or identifiable natural person;
+"Personal Data" means any information relating to a Data Subject;
+"Processing" means any operation performed on Personal Data;
+"Data Controller" means a Person who determines the purposes and means of Processing Personal Data;
+"Data Processor" means a Person who Processes Personal Data on behalf of a Data Controller;
+
+Article 3 - Scope of Application
+This Law applies to:
+(a) the Processing of Personal Data by Data Controllers and Data Processors established in the DIFC;
+(b) the Processing of Personal Data of Data Subjects in the DIFC by Data Controllers not established in the DIFC.
+
+Part 2 - Principles of Data Protection
+
+Article 5 - Lawfulness, Fairness and Transparency
+Personal Data shall be:
+(a) processed lawfully, fairly and in a transparent manner;
+(b) collected for specified, explicit and legitimate purposes;
+(c) adequate, relevant and limited to what is necessary;
+(d) accurate and kept up to date;
+(e) kept for no longer than necessary;
+(f) processed in a secure manner.
+
+Article 6 - Lawful Basis for Processing
+Processing is lawful only if at least one of the following applies:
+(a) the Data Subject has given consent;
+(b) processing is necessary for the performance of a contract;
+(c) processing is necessary for compliance with a legal obligation;
+(d) processing is necessary to protect vital interests;
+(e) processing is necessary for legitimate interests.
+
+Part 3 - Rights of Data Subjects
+
+Article 12 - Right of Access
+A Data Subject has the right to obtain confirmation as to whether Personal Data concerning them is being processed and access to such Personal Data.
+
+Article 13 - Right to Rectification
+A Data Subject has the right to obtain rectification of inaccurate Personal Data concerning them.
+
+Article 14 - Right to Erasure
+A Data Subject has the right to obtain erasure of Personal Data concerning them where:
+(a) the Personal Data is no longer necessary;
+(b) the Data Subject withdraws consent;
+(c) the Personal Data has been unlawfully processed.
+
+Article 15 - Right to Data Portability
+A Data Subject has the right to receive Personal Data in a structured, commonly used format and to transmit that data to another Data Controller.
+
+Part 4 - Obligations of Data Controllers
+
+Article 20 - Data Protection by Design
+Data Controllers shall implement appropriate technical and organisational measures to ensure processing meets the requirements of this Law.
+
+Article 21 - Records of Processing Activities
+Data Controllers shall maintain records of all categories of processing activities under their responsibility.
+
+Article 22 - Data Protection Impact Assessment
+Data Controllers shall carry out a data protection impact assessment where processing is likely to result in high risk to rights and freedoms.
+
+Part 5 - International Transfers
+
+Article 25 - General Principle
+Personal Data may only be transferred to a jurisdiction outside the DIFC if that jurisdiction ensures an adequate level of protection.
+
+Article 26 - Adequacy Decisions
+The Commissioner may decide that a jurisdiction provides adequate protection for Personal Data.
+
+Part 6 - Enforcement
+
+Article 30 - Administrative Fines
+The Commissioner may impose administrative fines for infringements of this Law up to:
+(a) USD 272,000 or 2% of annual worldwide turnover for less serious infringements;
+(b) USD 545,000 or 4% of annual worldwide turnover for more serious infringements.
+
+Article 31 - Data Protection Officer
+Data Controllers must designate a Data Protection Officer where they engage in large scale systematic monitoring or processing of sensitive Personal Data.
+
+This Law comes into force on 1 July 2020.

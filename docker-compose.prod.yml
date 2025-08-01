@@ -1,0 +1,436 @@
+# QaAI Legal Assistant System - Production Docker Compose Configuration
+#
+# Production-ready setup with optimized containers, health checks, and monitoring
+# Run with: docker-compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+# 1. Copy .env.example to .env and configure production values
+# 2. Build production images: docker-compose -f docker-compose.prod.yml build
+# 3. Initialize database: docker-compose -f docker-compose.prod.yml run --rm qaai-api python -m apps.api.scripts.init_db
+
+version: '3.8'
+
+services:
+  # ================================================================
+  # QaAI Backend API Service (Production)
+  # ================================================================
+  qaai-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: production
+    container_name: qaai-api-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - DB_URL=postgresql+asyncpg://qaai_user:${POSTGRES_PASSWORD}@postgres:5432/qaai
+      - REDIS_URL=redis://redis:6379/0
+      - STORAGE_PATH=./data/files
+      - INDEX_DIR=./data/index
+      - BACKEND_URL=${BACKEND_URL:-https://api.qaai.example.com}
+      - FRONTEND_URL=${FRONTEND_URL:-https://qaai.example.com}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://qaai.example.com}
+      - WORKERS=4
+      - MAX_WORKERS=8
+      - WORKER_TIMEOUT=300
+      # API keys (from .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Model configuration
+      - DEFAULT_PLANNER_MODEL=${DEFAULT_PLANNER_MODEL:-o1}
+      - DEFAULT_DRAFTER_MODEL=${DEFAULT_DRAFTER_MODEL:-gpt-4.1}
+      - DEFAULT_VERIFIER_MODEL=${DEFAULT_VERIFIER_MODEL:-claude-3.7-sonnet}
+      - ENABLE_MODEL_FALLBACK=true
+      - MAX_RETRIES_PER_MODEL=3
+      # RAG configuration optimized for production
+      - EMBEDDINGS_BACKEND=${EMBEDDINGS_BACKEND:-sentence-transformers}
+      - EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL:-all-MiniLM-L6-v2}
+      - CHUNK_SIZE=${CHUNK_SIZE:-800}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-120}
+      - MAX_RETRIEVAL_RESULTS=15
+      - FAISS_INDEX_TYPE=IndexIVFFlat
+      - FAISS_NPROBE=20
+      # DIFC configuration
+      - DEFAULT_JURISDICTION=DIFC
+      - CITATION_THRESHOLD=0.25
+      # Security and performance
+      - JWT_SECRET=${JWT_SECRET}
+      - RATE_LIMIT_REQUESTS_PER_MINUTE=300
+      - RATE_LIMIT_BURST=50
+      - MAX_UPLOAD_SIZE=104857600  # 100MB for production
+      # Monitoring
+      - SENTRY_DSN=${SENTRY_DSN}
+      - PROMETHEUS_ENABLED=true
+      - PROMETHEUS_PORT=9090
+    volumes:
+      - qaai-prod-data:/app/data:rw
+      - qaai-prod-logs:/app/logs:rw
+    networks:
+      - qaai-prod-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ================================================================
+  # QaAI Frontend Web Service (Production)
+  # ================================================================
+  qaai-web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      target: production
+    container_name: qaai-web-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NODE_ENV=production
+      - VITE_API_BASE_URL=${BACKEND_URL:-https://api.qaai.example.com}
+      - VITE_WS_URL=${WS_URL:-wss://api.qaai.example.com}
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+      - qaai-prod-logs:/var/log/nginx:rw
+    networks:
+      - qaai-prod-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    depends_on:
+      - qaai-api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ================================================================
+  # PostgreSQL Production Database
+  # ================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: qaai-postgres-prod
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=qaai
+      - POSTGRES_USER=qaai_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - qaai-postgres-prod-data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d:ro
+      - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    networks:
+      - qaai-prod-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qaai_user -d qaai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    command: >
+      postgres 
+      -c config_file=/etc/postgresql/postgresql.conf
+      -c log_statement=mod
+      -c log_duration=on
+      -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # ================================================================
+  # Redis Production Cache
+  # ================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: qaai-redis-prod
+    ports:
+      - "6379:6379"
+    volumes:
+      - qaai-redis-prod-data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - qaai-prod-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --appendonly yes
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+      --maxmemory 768mb
+      --maxmemory-policy allkeys-lru
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "2"
+
+  # ================================================================
+  # Production Monitoring Stack
+  # ================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: qaai-prometheus-prod
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/rules:/etc/prometheus/rules:ro
+      - qaai-prometheus-prod-data:/prometheus
+    networks:
+      - qaai-prod-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=10GB'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: qaai-grafana-prod
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_COOKIE_SECURE=true
+      - GF_SECURITY_STRICT_TRANSPORT_SECURITY=true
+      - GF_LOG_LEVEL=warn
+      - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL:-http://localhost:3001}
+    volumes:
+      - qaai-grafana-prod-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - qaai-prod-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    depends_on:
+      - prometheus
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ================================================================
+  # Log Aggregation (ELK Stack Alternative)
+  # ================================================================
+  loki:
+    image: grafana/loki:latest
+    container_name: qaai-loki-prod
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./docker/loki/loki.yml:/etc/loki/local-config.yaml:ro
+      - qaai-loki-prod-data:/loki
+    networks:
+      - qaai-prod-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    command: -config.file=/etc/loki/local-config.yaml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "2"
+
+  # ================================================================
+  # Backup Service
+  # ================================================================
+  backup:
+    image: alpine:latest
+    container_name: qaai-backup-prod
+    volumes:
+      - qaai-prod-data:/backup/data:ro
+      - qaai-postgres-prod-data:/backup/postgres:ro
+      - qaai-redis-prod-data:/backup/redis:ro
+      - ./docker/backup:/backup/scripts:ro
+      - qaai-backup-storage:/backup/output:rw
+    networks:
+      - qaai-prod-network
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    command: >
+      sh -c "
+        apk add --no-cache postgresql-client redis &&
+        crond -f -d 8
+      "
+    profiles:
+      - backup
+
+# ================================================================
+# Production Network Configuration
+# ================================================================
+networks:
+  qaai-prod-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: qaai-prod-br0
+
+# ================================================================
+# Production Volume Configuration
+# ================================================================
+volumes:
+  # Application data
+  qaai-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/data
+  
+  # Database volumes
+  qaai-postgres-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/postgres
+  
+  qaai-redis-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/redis
+  
+  # Monitoring volumes
+  qaai-prometheus-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/prometheus
+  
+  qaai-grafana-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/grafana
+  
+  qaai-loki-prod-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/loki
+  
+  # Backup storage
+  qaai-backup-storage:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/backups
+  
+  # Log storage
+  qaai-prod-logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /opt/qaai/logs

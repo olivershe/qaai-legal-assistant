@@ -1,0 +1,52 @@
+# Core FastAPI dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+
+# Database and async support
+aiosqlite
+sqlalchemy[asyncio]
+
+# Pydantic and validation
+pydantic>=2.0
+pydantic-settings
+
+# AI and ML dependencies
+openai
+anthropic
+langchain
+langgraph
+langchain-openai
+langchain-anthropic
+
+# Vector search and embeddings
+faiss-cpu
+sentence-transformers
+
+# Document processing
+pypdf
+beautifulsoup4
+
+# SSE streaming
+sse-starlette
+
+# HTTP client
+httpx
+aiohttp
+
+# Development and testing
+pytest
+pytest-asyncio
+pytest-cov
+pytest-mock
+
+# Code quality
+ruff
+mypy
+black
+
+# Utility libraries
+tqdm
+numpy
+typing-extensions

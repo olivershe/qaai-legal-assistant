@@ -1,0 +1,97 @@
+DFSA Rulebook - General Module (GEN)
+
+Chapter 1 - Application and Interpretation
+
+1.1 Application
+1.1.1 This module (GEN) applies to every Person to whom any legislation administered by the DFSA applies.
+
+1.1.2 This module contains:
+(a) rules of general application;
+(b) guidance on the application of DFSA legislation;
+(c) standard definitions used throughout DFSA legislation.
+
+1.2 Structure of the DFSA Rulebook
+1.2.1 The DFSA Rulebook is divided into modules, with each module covering a particular area of regulation.
+1.2.2 The modules are:
+- GEN (General Module)
+- AUT (Authorisation Module)  
+- COB (Conduct of Business Module)
+- PIB (Prudential - Investment Business Module)
+- PIN (Prudential - Insurance Business Module)
+
+1.3 Defined Terms
+1.3.1 Terms defined in the Regulatory Law 2004 have the same meaning in the DFSA Rulebook.
+1.3.2 Additional definitions are set out in the Glossary (GLO).
+
+Chapter 2 - Authorisation Requirements
+
+2.1 General Requirement
+2.1.1 A Person must not carry on a Financial Service in or from the DIFC unless:
+(a) it is an Authorised Person; or
+(b) it is an Exempt Person in relation to that Financial Service.
+
+2.1.2 Financial Services include:
+(a) dealing in Investments as Principal;
+(b) dealing in Investments as Agent;
+(c) arranging Deals in Investments;
+(d) managing Assets;
+(e) safeguarding and administering Investments;
+(f) advising on Financial Products;
+(g) providing Credit;
+(h) operating an Exchange;
+(i) operating a Clearing House;
+(j) insurance business.
+
+2.2 Categories of Authorisation
+2.2.1 The DFSA may grant authorisation in one or more of the following categories:
+(a) Bank
+(b) Insurer
+(c) Investment Firm
+(d) Investment Manager
+(e) Investment Adviser
+(f) Insurance Intermediary
+
+Chapter 3 - Conduct Standards
+
+3.1 Principles for Authorised Persons
+3.1.1 An Authorised Person must conduct its business with:
+(a) integrity;
+(b) due skill, care and diligence;
+(c) fair treatment of customers;
+(d) proper standards of market conduct.
+
+3.2 Senior Management Responsibilities
+3.2.1 Senior Management must take reasonable steps to ensure the firm complies with relevant requirements.
+3.2.2 Senior Management includes:
+(a) directors;
+(b) chief executive;
+(c) other key control functions.
+
+Chapter 4 - Financial Resources
+
+4.1 Minimum Capital Requirements
+4.1.1 An Authorised Person must at all times maintain adequate financial resources.
+4.1.2 The minimum capital requirements are:
+- Investment Firm: USD 500,000
+- Investment Manager: USD 1,000,000  
+- Bank: USD 20,000,000
+- Insurer: USD 2,000,000
+
+4.2 Capital Adequacy Reporting
+4.2.1 Authorised Persons must submit quarterly capital adequacy returns.
+4.2.2 Returns must be submitted within 30 days of quarter end.
+
+Chapter 5 - Market Conduct
+
+5.1 Market Abuse
+5.1.1 A Person must not engage in market abuse.
+5.1.2 Market abuse includes:
+(a) insider dealing;
+(b) market manipulation;
+(c) misleading statements.
+
+5.2 Disclosure Requirements
+5.2.1 Material information must be disclosed to the market promptly and fairly.
+5.2.2 Selective disclosure is prohibited.
+
+This version effective from 1 January 2023.

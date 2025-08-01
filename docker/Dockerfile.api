@@ -1,0 +1,83 @@
+# QaAI API Service Dockerfile
+# Multi-stage build for production optimization
+
+# ================================================================
+# Base stage with Python and dependencies
+# ================================================================
+FROM python:3.9-slim AS base
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user for security
+RUN groupadd -r qaai && useradd -r -g qaai qaai
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ================================================================
+# Development stage
+# ================================================================
+FROM base AS development
+
+# Install development dependencies
+RUN pip install --no-cache-dir pytest pytest-cov black ruff mypy
+
+# Copy source code
+COPY apps/api apps/api/
+COPY examples/ examples/
+COPY data/ data/
+
+# Set up directories
+RUN mkdir -p data/files data/index && \
+    chown -R qaai:qaai /app
+
+# Switch to app user
+USER qaai
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start development server with hot reload
+CMD ["python", "-m", "uvicorn", "apps.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# ================================================================
+# Production stage
+# ================================================================
+FROM base AS production
+
+# Copy only necessary files
+COPY apps/api apps/api/
+COPY examples/sample_corpus examples/sample_corpus/
+
+# Set up directories and permissions
+RUN mkdir -p data/files data/index logs && \
+    chown -R qaai:qaai /app
+
+# Switch to app user
+USER qaai
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Start production server
+CMD ["python", "-m", "uvicorn", "apps.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
+# ================================================================
+# Metadata
+# ================================================================
+LABEL maintainer="QaAI Team"
+LABEL description="QaAI Legal Assistant API Service"
+LABEL version="1.0.0"
+
+EXPOSE 8000

@@ -1,0 +1,246 @@
+# QaAI Legal Assistant System - Docker Compose Configuration
+# 
+# Development setup with all services running locally
+# Run with: docker-compose up --build
+#
+# For production, use: docker-compose -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+services:
+  # ================================================================
+  # QaAI Backend API Service
+  # ================================================================
+  qaai-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: development
+    container_name: qaai-api-dev
+    ports:
+      - "8000:8000"
+    environment:
+      # Override environment variables for Docker
+      - APP_ENV=development
+      - LOG_LEVEL=INFO
+      - DB_URL=sqlite+aiosqlite:///./data/qaai.db
+      - STORAGE_PATH=./data/files
+      - INDEX_DIR=./data/index
+      - BACKEND_URL=http://localhost:8000
+      - FRONTEND_URL=http://localhost:3000
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      # Load API keys from .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Model configuration
+      - DEFAULT_PLANNER_MODEL=${DEFAULT_PLANNER_MODEL:-o1}
+      - DEFAULT_DRAFTER_MODEL=${DEFAULT_DRAFTER_MODEL:-gpt-4.1}
+      - DEFAULT_VERIFIER_MODEL=${DEFAULT_VERIFIER_MODEL:-claude-3.7-sonnet}
+      # RAG configuration
+      - EMBEDDINGS_BACKEND=${EMBEDDINGS_BACKEND:-sentence-transformers}
+      - EMBEDDINGS_MODEL=${EMBEDDINGS_MODEL:-all-MiniLM-L6-v2}
+      - CHUNK_SIZE=${CHUNK_SIZE:-800}
+      - CHUNK_OVERLAP=${CHUNK_OVERLAP:-120}
+      # DIFC configuration
+      - DEFAULT_JURISDICTION=${DEFAULT_JURISDICTION:-DIFC}
+      - CITATION_THRESHOLD=${CITATION_THRESHOLD:-0.25}
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data:rw
+      - ./examples/sample_corpus:/app/examples/sample_corpus:ro
+      # Mount source code for development hot reload
+      - ./apps/api:/app/apps/api:ro
+      - ./examples:/app/examples:ro
+    networks:
+      - qaai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  # ================================================================
+  # QaAI Frontend Web Service
+  # ================================================================
+  qaai-web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      target: development
+    container_name: qaai-web-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_WS_URL=ws://localhost:8000
+    volumes:
+      # Mount source code for development hot reload
+      - ./apps/web:/app/apps/web:rw
+      - ./examples/design:/app/examples/design:ro
+      # Cache node_modules to improve build speed
+      - qaai-web-node-modules:/app/apps/web/node_modules
+    networks:
+      - qaai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    depends_on:
+      - qaai-api
+
+  # ================================================================
+  # Redis Service (Caching & Session Storage)
+  # ================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: qaai-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - qaai-redis-data:/data
+    networks:
+      - qaai-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    command: >
+      redis-server 
+      --appendonly yes 
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+
+  # ================================================================
+  # PostgreSQL Service (Production Database Alternative)
+  # ================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: qaai-postgres-dev
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=qaai
+      - POSTGRES_USER=qaai_user
+      - POSTGRES_PASSWORD=qaai_dev_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - qaai-postgres-data:/var/lib/postgresql/data
+      - ./docker/init-scripts:/docker-entrypoint-initdb.d:ro
+    networks:
+      - qaai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qaai_user -d qaai"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - postgres  # Only start when explicitly requested
+
+  # ================================================================
+  # Monitoring Services
+  # ================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: qaai-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - qaai-prometheus-data:/prometheus
+    networks:
+      - qaai-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    profiles:
+      - monitoring  # Only start when explicitly requested
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: qaai-grafana-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - qaai-grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - qaai-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring  # Only start when explicitly requested
+
+  # ================================================================
+  # Vector Database (Alternative to FAISS)
+  # ================================================================
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qaai-qdrant-dev
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qaai-qdrant-data:/qdrant/storage
+    networks:
+      - qaai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    profiles:
+      - qdrant  # Only start when explicitly requested
+
+# ================================================================
+# Network Configuration
+# ================================================================
+networks:
+  qaai-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ================================================================
+# Volume Configuration
+# ================================================================
+volumes:
+  # Persistent data volumes
+  qaai-redis-data:
+    driver: local
+  qaai-postgres-data:
+    driver: local
+  qaai-prometheus-data:
+    driver: local
+  qaai-grafana-data:
+    driver: local
+  qaai-qdrant-data:
+    driver: local
+  
+  # Development volumes for faster builds
+  qaai-web-node-modules:
+    driver: local

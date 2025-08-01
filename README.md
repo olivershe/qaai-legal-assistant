@@ -1,296 +1,494 @@
-# Context Engineering Template
+# QaAI Legal Assistant System
 
-A comprehensive template for getting started with Context Engineering - the discipline of engineering context for AI coding assistants so they have the information necessary to get the job done end to end.
+A comprehensive Harvey-style, DIFC-focused legal AI demo system with React frontend, FastAPI backend, LangGraph orchestration, and comprehensive RAG capabilities.
 
-> **Context Engineering is 10x better than prompt engineering and 100x better than vibe coding.**
+> **A production-ready legal AI assistant for DIFC jurisdiction with visible thinking states and streaming responses.**
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Clone this template
-git clone https://github.com/coleam00/Context-Engineering-Intro.git
-cd Context-Engineering-Intro
+# 1. Clone the repository
+git clone <repository-url>
+cd QaAI-DIFC-Main
 
-# 2. Set up your project rules (optional - template provided)
-# Edit CLAUDE.md to add your project-specific guidelines
+# 2. Set up Python virtual environment
+python3 -m venv venv_linux
+source venv_linux/bin/activate
 
-# 3. Add examples (highly recommended)
-# Place relevant code examples in the examples/ folder
+# 3. Install Python dependencies
+pip install -r requirements.txt
 
-# 4. Create your initial feature request
-# Edit INITIAL.md with your feature requirements
+# 4. Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys and configuration
 
-# 5. Generate a comprehensive PRP (Product Requirements Prompt)
-# In Claude Code, run:
-/generate-prp INITIAL.md
+# 5. Initialize database and vector store
+python -m apps.api.scripts.init_db
+python -m apps.api.scripts.ingest_corpus examples/sample_corpus/
 
-# 6. Execute the PRP to implement your feature
-# In Claude Code, run:
-/execute-prp PRPs/your-feature-name.md
+# 6. Start the backend
+cd apps/api
+python -m uvicorn main:app --reload --port 8000
+
+# 7. Install frontend dependencies (in a new terminal)
+cd apps/web
+npm install
+
+# 8. Start the frontend
+npm run dev
+
+# 9. Open http://localhost:3000 to access the application
 ```
 
 ## 📚 Table of Contents
 
-- [What is Context Engineering?](#what-is-context-engineering)
-- [Template Structure](#template-structure)
-- [Step-by-Step Guide](#step-by-step-guide)
-- [Writing Effective INITIAL.md Files](#writing-effective-initialmd-files)
-- [The PRP Workflow](#the-prp-workflow)
-- [Using Examples Effectively](#using-examples-effectively)
-- [Best Practices](#best-practices)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [DIFC Corpus Setup](#difc-corpus-setup)
+- [Development](#development)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
 
-## What is Context Engineering?
+## Features
 
-Context Engineering represents a paradigm shift from traditional prompt engineering:
+### Core Capabilities
+- **Harvey-style Legal AI**: Comprehensive legal assistance specifically tailored for DIFC jurisdiction
+- **Three Primary Interfaces**: Assistant (Assist/Draft modes), Vault (document management), Workflows (agentic processes)
+- **Real-time Streaming**: Server-Sent Events (SSE) for visible thinking states and progressive responses
+- **DIFC-First Architecture**: Prioritizes DIFC Laws, Regulations, Court Rules, and DFSA Rulebook in all operations
+- **Multi-Model Support**: OpenAI (GPT-4.1, o1, o3) and Anthropic (Claude-3.7-Sonnet) with intelligent routing
+- **Citation Verification**: Binary match validation with Jaccard similarity for accurate legal references
 
-### Prompt Engineering vs Context Engineering
+### Technical Features
+- **LangGraph Orchestration**: Deterministic, inspectable workflow graphs for complex legal processes
+- **Hybrid RAG System**: FAISS vector search combined with BM25 for optimal retrieval accuracy
+- **Async Architecture**: FastAPI backend with async SQLite and proper session management
+- **Design System Integration**: JSON-driven design profiles ensuring consistent UI/UX
+- **Comprehensive Testing**: 100+ test scenarios covering API endpoints, workflows, and RAG systems
 
-**Prompt Engineering:**
-- Focuses on clever wording and specific phrasing
-- Limited to how you phrase a task
-- Like giving someone a sticky note
-
-**Context Engineering:**
-- A complete system for providing comprehensive context
-- Includes documentation, examples, rules, patterns, and validation
-- Like writing a full screenplay with all the details
-
-### Why Context Engineering Matters
-
-1. **Reduces AI Failures**: Most agent failures aren't model failures - they're context failures
-2. **Ensures Consistency**: AI follows your project patterns and conventions
-3. **Enables Complex Features**: AI can handle multi-step implementations with proper context
-4. **Self-Correcting**: Validation loops allow AI to fix its own mistakes
-
-## Template Structure
+## Architecture
 
 ```
-context-engineering-intro/
-├── .claude/
-│   ├── commands/
-│   │   ├── generate-prp.md    # Generates comprehensive PRPs
-│   │   └── execute-prp.md     # Executes PRPs to implement features
-│   └── settings.local.json    # Claude Code permissions
-├── PRPs/
-│   ├── templates/
-│   │   └── prp_base.md       # Base template for PRPs
-│   └── EXAMPLE_multi_agent_prp.md  # Example of a complete PRP
-├── examples/                  # Your code examples (critical!)
-├── CLAUDE.md                 # Global rules for AI assistant
-├── INITIAL.md               # Template for feature requests
-├── INITIAL_EXAMPLE.md       # Example feature request
-└── README.md                # This file
+qaai-system/
+├── .env.example                       # Environment variables template
+├── requirements.txt                   # Python dependencies
+├── venv_linux/                        # Virtual environment (use for all commands)
+├── apps/
+│   ├── api/                           # FastAPI backend
+│   │   ├── main.py                    # FastAPI app with SSE endpoints
+│   │   ├── agents/                    # LangGraph agents and orchestration
+│   │   │   ├── graph.py               # LangGraph composition
+│   │   │   ├── nodes.py               # Node implementations
+│   │   │   ├── prompts.py             # DIFC-focused system prompts
+│   │   │   └── router.py              # Model selection per step
+│   │   ├── api/                       # API route definitions
+│   │   │   ├── assistant.py           # Assistant endpoints (SSE streaming)
+│   │   │   ├── vault.py               # Vault project management
+│   │   │   ├── workflows.py           # Workflow execution
+│   │   │   └── ingest.py              # Document ingestion
+│   │   ├── core/                      # Core business logic
+│   │   │   ├── config.py              # Settings and environment
+│   │   │   ├── models.py              # Pydantic models
+│   │   │   ├── database.py            # Async SQLite management
+│   │   │   └── storage.py             # File system storage
+│   │   ├── rag/                       # RAG implementation
+│   │   │   ├── vector_store.py        # FAISS vector operations
+│   │   │   ├── retrievers.py          # DIFC-first retrieval logic
+│   │   │   ├── embeddings.py          # Embedding generation
+│   │   │   └── citations.py           # Citation verification
+│   │   ├── services/                  # External service integrations
+│   │   │   ├── openai_client.py       # OpenAI API client
+│   │   │   └── anthropic_client.py    # Anthropic API client
+│   │   └── tests/                     # Comprehensive test suite
+│   └── web/                           # React frontend
+│       ├── package.json               # Node.js dependencies
+│       ├── tailwind.config.js         # Tailwind v4 configuration
+│       ├── src/
+│       │   ├── components/            # UI components (shadcn/ui)
+│       │   │   ├── assistant/         # Assistant interface
+│       │   │   ├── vault/             # Document management
+│       │   │   └── workflows/         # Workflow execution
+│       │   ├── hooks/                 # React hooks for API and state
+│       │   ├── services/              # API client and SSE handling
+│       │   └── types/                 # TypeScript definitions
+├── data/                              # Local storage
+│   ├── files/                         # Uploaded documents
+│   ├── index/                         # FAISS index files
+│   └── qaai.db                        # SQLite database
+├── examples/                          # Implementation patterns and samples
+│   ├── design/                        # UI design profiles (single source of truth)
+│   └── sample_corpus/                 # Sample DIFC documents
+└── docs/                              # Documentation
+    └── API.md                         # Complete API documentation
 ```
 
-This template doesn't focus on RAG and tools with context engineering because I have a LOT more in store for that soon. ;)
+## Requirements
 
-## Step-by-Step Guide
+### System Requirements
+- **Python**: 3.8+ (tested with Python 3.9-3.11)
+- **Node.js**: 16+ (tested with Node.js 18-20)
+- **Memory**: 4GB+ RAM (8GB+ recommended for FAISS operations)
+- **Storage**: 5GB+ free space (for vector indices and documents)
 
-### 1. Set Up Global Rules (CLAUDE.md)
+### API Keys Required
+- **OpenAI API Key**: For GPT-4.1, o1, and o3 models
+- **Anthropic API Key**: For Claude-3.7-Sonnet model
+- **Optional**: Sentence Transformers for local embeddings (no API key needed)
 
-The `CLAUDE.md` file contains project-wide rules that the AI assistant will follow in every conversation. The template includes:
+## Installation
 
-- **Project awareness**: Reading planning docs, checking tasks
-- **Code structure**: File size limits, module organization
-- **Testing requirements**: Unit test patterns, coverage expectations
-- **Style conventions**: Language preferences, formatting rules
-- **Documentation standards**: Docstring formats, commenting practices
-
-**You can use the provided template as-is or customize it for your project.**
-
-### 2. Create Your Initial Feature Request
-
-Edit `INITIAL.md` to describe what you want to build:
-
-```markdown
-## FEATURE:
-[Describe what you want to build - be specific about functionality and requirements]
-
-## EXAMPLES:
-[List any example files in the examples/ folder and explain how they should be used]
-
-## DOCUMENTATION:
-[Include links to relevant documentation, APIs, or MCP server resources]
-
-## OTHER CONSIDERATIONS:
-[Mention any gotchas, specific requirements, or things AI assistants commonly miss]
-```
-
-**See `INITIAL_EXAMPLE.md` for a complete example.**
-
-### 3. Generate the PRP
-
-PRPs (Product Requirements Prompts) are comprehensive implementation blueprints that include:
-
-- Complete context and documentation
-- Implementation steps with validation
-- Error handling patterns
-- Test requirements
-
-They are similar to PRDs (Product Requirements Documents) but are crafted more specifically to instruct an AI coding assistant.
-
-Run in Claude Code:
-```bash
-/generate-prp INITIAL.md
-```
-
-**Note:** The slash commands are custom commands defined in `.claude/commands/`. You can view their implementation:
-- `.claude/commands/generate-prp.md` - See how it researches and creates PRPs
-- `.claude/commands/execute-prp.md` - See how it implements features from PRPs
-
-The `$ARGUMENTS` variable in these commands receives whatever you pass after the command name (e.g., `INITIAL.md` or `PRPs/your-feature.md`).
-
-This command will:
-1. Read your feature request
-2. Research the codebase for patterns
-3. Search for relevant documentation
-4. Create a comprehensive PRP in `PRPs/your-feature-name.md`
-
-### 4. Execute the PRP
-
-Once generated, execute the PRP to implement your feature:
+### 1. Environment Setup
 
 ```bash
-/execute-prp PRPs/your-feature-name.md
+# Clone the repository
+git clone <repository-url>
+cd QaAI-DIFC-Main
+
+# Create and activate virtual environment
+python3 -m venv venv_linux
+source venv_linux/bin/activate  # On Windows: venv_linux\Scripts\activate
+
+# Upgrade pip and install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-The AI coding assistant will:
-1. Read all context from the PRP
-2. Create a detailed implementation plan
-3. Execute each step with validation
-4. Run tests and fix any issues
-5. Ensure all success criteria are met
+### 2. Frontend Setup
 
-## Writing Effective INITIAL.md Files
+```bash
+# Navigate to frontend directory
+cd apps/web
 
-### Key Sections Explained
+# Install Node.js dependencies
+npm install
 
-**FEATURE**: Be specific and comprehensive
-- ❌ "Build a web scraper"
-- ✅ "Build an async web scraper using BeautifulSoup that extracts product data from e-commerce sites, handles rate limiting, and stores results in PostgreSQL"
-
-**EXAMPLES**: Leverage the examples/ folder
-- Place relevant code patterns in `examples/`
-- Reference specific files and patterns to follow
-- Explain what aspects should be mimicked
-
-**DOCUMENTATION**: Include all relevant resources
-- API documentation URLs
-- Library guides
-- MCP server documentation
-- Database schemas
-
-**OTHER CONSIDERATIONS**: Capture important details
-- Authentication requirements
-- Rate limits or quotas
-- Common pitfalls
-- Performance requirements
-
-## The PRP Workflow
-
-### How /generate-prp Works
-
-The command follows this process:
-
-1. **Research Phase**
-   - Analyzes your codebase for patterns
-   - Searches for similar implementations
-   - Identifies conventions to follow
-
-2. **Documentation Gathering**
-   - Fetches relevant API docs
-   - Includes library documentation
-   - Adds gotchas and quirks
-
-3. **Blueprint Creation**
-   - Creates step-by-step implementation plan
-   - Includes validation gates
-   - Adds test requirements
-
-4. **Quality Check**
-   - Scores confidence level (1-10)
-   - Ensures all context is included
-
-### How /execute-prp Works
-
-1. **Load Context**: Reads the entire PRP
-2. **Plan**: Creates detailed task list using TodoWrite
-3. **Execute**: Implements each component
-4. **Validate**: Runs tests and linting
-5. **Iterate**: Fixes any issues found
-6. **Complete**: Ensures all requirements met
-
-See `PRPs/EXAMPLE_multi_agent_prp.md` for a complete example of what gets generated.
-
-## Using Examples Effectively
-
-The `examples/` folder is **critical** for success. AI coding assistants perform much better when they can see patterns to follow.
-
-### What to Include in Examples
-
-1. **Code Structure Patterns**
-   - How you organize modules
-   - Import conventions
-   - Class/function patterns
-
-2. **Testing Patterns**
-   - Test file structure
-   - Mocking approaches
-   - Assertion styles
-
-3. **Integration Patterns**
-   - API client implementations
-   - Database connections
-   - Authentication flows
-
-4. **CLI Patterns**
-   - Argument parsing
-   - Output formatting
-   - Error handling
-
-### Example Structure
-
-```
-examples/
-├── README.md           # Explains what each example demonstrates
-├── cli.py             # CLI implementation pattern
-├── agent/             # Agent architecture patterns
-│   ├── agent.py      # Agent creation pattern
-│   ├── tools.py      # Tool implementation pattern
-│   └── providers.py  # Multi-provider pattern
-└── tests/            # Testing patterns
-    ├── test_agent.py # Unit test patterns
-    └── conftest.py   # Pytest configuration
+# Return to project root
+cd ../..
 ```
 
-## Best Practices
+### 3. Database Initialization
 
-### 1. Be Explicit in INITIAL.md
-- Don't assume the AI knows your preferences
-- Include specific requirements and constraints
-- Reference examples liberally
+```bash
+# Ensure virtual environment is activated
+source venv_linux/bin/activate
 
-### 2. Provide Comprehensive Examples
-- More examples = better implementations
-- Show both what to do AND what not to do
-- Include error handling patterns
+# Create data directories
+mkdir -p data/files data/index
 
-### 3. Use Validation Gates
-- PRPs include test commands that must pass
-- AI will iterate until all validations succeed
-- This ensures working code on first try
+# Initialize SQLite database
+python -c "
+from apps.api.core.database import init_db
+import asyncio
+asyncio.run(init_db())
+print('Database initialized successfully')
+"
+```
 
-### 4. Leverage Documentation
-- Include official API docs
-- Add MCP server resources
-- Reference specific documentation sections
+## Configuration
 
-### 5. Customize CLAUDE.md
-- Add your conventions
-- Include project-specific rules
-- Define coding standards
+### Environment Variables
 
-## Resources
+Copy the `.env.example` file to create your environment configuration:
 
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Context Engineering Best Practices](https://www.philschmid.de/context-engineering)
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your specific configuration:
+
+```bash
+# Model Providers
+OPENAI_API_KEY=sk-your-openai-key-here
+ANTHROPIC_API_KEY=claude-your-anthropic-key-here
+
+# Default Model Configuration
+DEFAULT_PLANNER_MODEL=o1
+DEFAULT_DRAFTER_MODEL=gpt-4.1
+DEFAULT_VERIFIER_MODEL=claude-3.7-sonnet
+
+# Storage & Database
+STORAGE_PATH=./data/files
+DB_URL=sqlite+aiosqlite:///./data/qaai.db
+VECTOR_STORE=faiss
+INDEX_DIR=./data/index
+
+# RAG Configuration
+EMBEDDINGS_BACKEND=sentence-transformers
+EMBEDDINGS_MODEL=all-MiniLM-L6-v2
+CHUNK_SIZE=800
+CHUNK_OVERLAP=120
+
+# DIFC Configuration
+DEFAULT_JURISDICTION=DIFC
+CITATION_THRESHOLD=0.25
+
+# Application
+APP_ENV=development
+LOG_LEVEL=INFO
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:3000
+```
+
+### Model Configuration
+
+The system supports multiple AI models with intelligent routing:
+
+- **Planner Model** (default: o1): For complex reasoning and workflow planning
+- **Drafter Model** (default: gpt-4.1): For document drafting and content generation
+- **Verifier Model** (default: claude-3.7-sonnet): For long-context verification and citation checking
+
+## DIFC Corpus Setup
+
+### Sample Corpus
+
+The system includes sample DIFC documents in `examples/sample_corpus/`. To set up the full corpus:
+
+```bash
+# Ensure virtual environment is activated
+source venv_linux/bin/activate
+
+# Ingest sample corpus
+python examples/rag_ingest.py examples/sample_corpus/
+
+# Verify ingestion
+python -c "
+from apps.api.rag.vector_store import VectorStore
+vs = VectorStore()
+count = vs.get_document_count()
+print(f'Ingested {count} documents successfully')
+"
+```
+
+### Adding Your Own Documents
+
+1. **Supported Formats**: PDF, DOCX, TXT, MD
+2. **Document Structure**: Follow DIFC legal document conventions
+3. **Metadata Requirements**: Include jurisdiction, instrument type, and effective dates
+
+```bash
+# Add documents to a directory
+mkdir -p my_difc_documents/
+# Copy your documents to this directory
+
+# Ingest new documents
+python examples/rag_ingest.py my_difc_documents/
+```
+
+### Document Metadata Schema
+
+Each document should include metadata for optimal retrieval:
+
+```json
+{
+  "jurisdiction": "DIFC",
+  "instrument_type": "Law|Regulation|CourtRule|Rulebook|Notice",
+  "title": "Document Title",
+  "effective_date": "2023-01-01",
+  "section_references": ["Section 1", "Article 2"]
+}
+```
+
+## Development
+
+### Running the Application
+
+#### Backend (FastAPI)
+
+```bash
+# Ensure virtual environment is activated
+source venv_linux/bin/activate
+
+# Navigate to API directory
+cd apps/api
+
+# Start development server with hot reload
+python -m uvicorn main:app --reload --port 8000
+
+# API will be available at: http://localhost:8000
+# Interactive docs at: http://localhost:8000/docs
+```
+
+#### Frontend (React)
+
+```bash
+# In a new terminal, navigate to web directory
+cd apps/web
+
+# Start development server
+npm run dev
+
+# Frontend will be available at: http://localhost:3000
+```
+
+### Development Commands
+
+```bash
+# Backend linting and formatting
+cd apps/api && source ../../venv_linux/bin/activate
+ruff check . --fix              # Auto-fix style issues
+black . --check                 # Code formatting validation
+mypy . --ignore-missing-imports # Type checking
+
+# Frontend linting and building
+cd apps/web
+npm run lint                    # ESLint validation
+npm run type-check              # TypeScript validation
+npm run build                   # Production build
+```
+
+### Key Development Files
+
+- **CLAUDE.md**: Project-wide development rules and conventions
+- **TASK.md**: Current task progress and planning
+- **examples/design/**: UI design profiles (single source of truth for styling)
+- **examples/**: Code patterns and implementation examples
+
+## API Documentation
+
+See [docs/API.md](docs/API.md) for comprehensive API documentation including:
+
+- Authentication and rate limiting
+- SSE streaming event formats
+- Complete endpoint reference
+- Error handling and response codes
+- WebSocket integration patterns
+
+### Quick API Reference
+
+#### Assistant API
+```bash
+# Stream Assistant response
+curl -N -X POST http://localhost:8000/api/assistant/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mode": "assist",
+    "prompt": "Explain DIFC Employment Law basics",
+    "knowledge": {"jurisdiction": "DIFC"}
+  }'
+```
+
+#### Vault API
+```bash
+# Create project
+curl -X POST http://localhost:8000/api/vault/projects \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Contract Review", "visibility": "private"}'
+
+# Upload document
+curl -X POST http://localhost:8000/api/vault/projects/{project_id}/upload \
+  -F "file=@contract.pdf"
+```
+
+#### Workflows API
+```bash
+# Execute workflow
+curl -N -X POST http://localhost:8000/api/workflows/draft-from-template \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Draft employment contract",
+    "jurisdiction": "DIFC",
+    "template_doc_id": "template-123"
+  }'
+```
+
+## Testing
+
+### Backend Testing
+
+The system includes comprehensive test coverage:
+
+```bash
+# Ensure virtual environment is activated
+source venv_linux/bin/activate
+
+# Run all tests
+cd apps/api && pytest tests/ -v
+
+# Run specific test categories
+pytest tests/test_api/ -v --cov=api           # API endpoint tests
+pytest tests/test_agents/ -v --cov=agents    # LangGraph workflow tests
+pytest tests/test_rag/ -v --cov=rag          # RAG system tests
+
+# Run tests with coverage report
+pytest tests/ -v --cov=. --cov-report=html
+```
+
+### Test Categories
+
+1. **API Tests** (`tests/test_api/`): FastAPI endpoints, SSE streaming, error handling
+2. **Agent Tests** (`tests/test_agents/`): LangGraph workflows, thinking states, model routing
+3. **RAG Tests** (`tests/test_rag/`): Vector operations, DIFC-first retrieval, citation verification
+4. **Integration Tests**: End-to-end workflows combining multiple components
+
+### Frontend Testing
+
+```bash
+cd apps/web
+
+# Run unit tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run end-to-end tests (requires running backend)
+npm run test:e2e
+```
+
+## Deployment
+
+### Docker Deployment
+
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
+
+# Run in production mode
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Manual Production Deployment
+
+```bash
+# Backend deployment
+source venv_linux/bin/activate
+cd apps/api
+gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+
+# Frontend deployment
+cd apps/web
+npm run build
+# Serve dist/ with your preferred web server (nginx, apache, etc.)
+```
+
+### Environment-Specific Configuration
+
+- **Development**: Uses SQLite, local file storage, debug logging
+- **Production**: Supports PostgreSQL, cloud storage, structured logging
+- **Testing**: Uses in-memory databases, mock external services
+
+## Troubleshooting
+
+### Common Issues
+
+1. **FAISS Installation**: If FAISS installation fails, try `pip install faiss-cpu`
+2. **Vector Store Errors**: Ensure `data/index/` directory exists and is writable
+3. **API Key Issues**: Verify API keys in `.env` file have correct prefixes
+4. **Port Conflicts**: Backend runs on :8000, frontend on :3000 by default
+
+### Performance Optimization
+
+- **Memory Usage**: FAISS indices are loaded into memory; 8GB+ RAM recommended
+- **Query Speed**: Hybrid retrieval (BM25 + FAISS) optimizes for both speed and accuracy
+- **Rate Limiting**: Built-in exponential backoff for API providers
+
+### Support
+
+- **Documentation**: Check `docs/` directory for detailed guides
+- **Examples**: Review `examples/` for implementation patterns
+- **Issues**: Report bugs and feature requests via project issues
+- **Development**: See `CLAUDE.md` for development guidelines

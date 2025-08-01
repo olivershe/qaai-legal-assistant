@@ -1,0 +1,230 @@
+{
+    "meta": {
+      "title": "QaAI Assistant – UI Design System Profile",
+      "purpose": "Give Cursor/AI enough structure and tokens to consistently recreate this UI in React.",
+      "source_image": "sandbox:/mnt/data/Screenshot 2025-07-27 at 19.24.24.png",
+      "observed_on": "2025-07-27",
+      "image_dimensions_px": { "width": 1362, "height": 768 },
+      "notes": "Color palette extracted programmatically from the screenshot; layout sizes are estimated to be production-realistic. Style emphasizes neutral, minimal design with strong information hierarchy."
+    },
+    "style": {
+      "theme": "light",
+      "design_language": [
+        "neutral monochrome palette",
+        "ample whitespace",
+        "subtle borders instead of hard dividers",
+        "rounded corners and soft shadows",
+        "clear hierarchy via weight/size, not color",
+        "task-driven cards and guided flows"
+      ],
+      "brand": {
+        "wordmark_color": "#212120",
+        "logo_placement": "top-left of sidebar",
+        "tone": ["professional", "calm", "evidence-led"]
+      }
+    },
+    "colors": {
+      "palette_observed": [
+        { "hex": "#FBFAFA", "ratio": 0.9208 },
+        { "hex": "#E9E8E7", "ratio": 0.0254 },
+        { "hex": "#D4D4D2", "ratio": 0.0341 },
+        { "hex": "#C2C1BE", "ratio": 0.0014 },
+        { "hex": "#C0BEBC", "ratio": 0.0004 },
+        { "hex": "#A5A4A3", "ratio": 0.0165 },
+        { "hex": "#807F7D", "ratio": 0.0001 },
+        { "hex": "#80807E", "ratio": 0.0001 },
+        { "hex": "#7A7978", "ratio": 0.0011 },
+        { "hex": "#212120", "ratio": 0.0001 }
+      ],
+      "semantic": {
+        "bg": { "default": "#FFFFFF", "canvas": "#FBFAFA", "subtle": "#F7F7F6", "sidebar": "#FFFFFF", "card": "#FFFFFF", "input": "#FFFFFF", "tab": { "selected": "#F3F3F2", "hover": "#F4F4F3" }, "dropzone": "#F7F7F6", "badge": "#F3F3F2" },
+        "border": { "default": "#E9E8E7", "muted": "#EFEFEE", "focus": "#D4D4D2" },
+        "text": { "primary": "#212120", "secondary": "#6F6E6D", "muted": "#8A8A88", "inverse": "#FFFFFF", "placeholder": "#9A9997", "link": "#1F2937" },
+        "icon": { "primary": "#6F6E6D", "muted": "#A5A4A3" },
+        "action": { "primary": { "bg": "#E9E8E7", "text": "#212120", "hoverBg": "#DAD9D7", "activeBg": "#CECDCB" } },
+        "focus": { "ring": "rgba(31, 102, 214, 0.5)" },
+        "shadow": { "color": "rgba(16, 16, 16, 0.08)" }
+      }
+    },
+    "typography": {
+      "font_family_stack": ["Inter", "SF Pro Text", "Segoe UI", "Roboto", "system-ui", "-apple-system", "sans-serif"],
+      "scale": {
+        "display": { "size": 28, "lineHeight": 36, "weight": 600, "tracking": 0 },
+        "h1": { "size": 24, "lineHeight": 32, "weight": 600, "tracking": 0 },
+        "h2": { "size": 18, "lineHeight": 28, "weight": 600, "tracking": 0 },
+        "body": { "size": 14, "lineHeight": 22, "weight": 400, "tracking": 0 },
+        "label": { "size": 12, "lineHeight": 18, "weight": 500, "tracking": 0.2 },
+        "caption": { "size": 12, "lineHeight": 16, "weight": 400, "tracking": 0.2 }
+      }
+    },
+    "spacing": { "unit": 4, "scale": [0, 2, 4, 6, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64] },
+    "radii": { "xs": 4, "sm": 6, "md": 8, "lg": 10, "xl": 12, "pill": 999 },
+    "shadows": {
+      "sm": "0 1px 2px rgba(16,16,16,0.04)",
+      "md": "0 2px 6px rgba(16,16,16,0.06)",
+      "lg": "0 8px 24px rgba(16,16,16,0.08)"
+    },
+    "layout": {
+      "breakpoints_px": { "sm": 640, "md": 768, "lg": 1024, "xl": 1280 },
+      "grid": { "columns": 12, "gutter": 24, "marginX": 24 },
+      "app_shell": {
+        "sidebar": { "width": 256, "paddingX": 16, "paddingY": 16, "borderRight": true },
+        "topbar": { "height": 64, "paddingX": 24 },
+        "content": { "maxWidth": 1060, "paddingX": 24, "paddingY": 24 }
+      }
+    },
+    "iconography": {
+      "library_hint": "lucide-react or similar outline icon set",
+      "sizes": { "xs": 14, "sm": 16, "md": 20, "lg": 24 },
+      "stroke_width": 1.5,
+      "color_default": "{colors.semantic.icon.primary}"
+    },
+    "interaction": {
+      "timings_ms": { "fast": 120, "base": 180, "slow": 240 },
+      "easings": { "standard": "cubic-bezier(0.2, 0, 0, 1)" },
+      "focus_ring": "0 0 0 3px {colors.semantic.focus.ring}",
+      "hover_opacity": 0.98,
+      "press_opacity": 0.96,
+      "kbd_submit": "Meta/Ctrl + Enter"
+    },
+    "components": {
+      "AppSidebar": {
+        "width": "{layout.app_shell.sidebar.width}",
+        "bg": "{colors.semantic.bg.sidebar}",
+        "borderRight": "{colors.semantic.border.default}",
+        "sections": [
+          { "type": "brand", "items": [{ "component": "Wordmark", "size": "md", "color": "{style.brand.wordmark_color}" }] },
+          { "type": "context", "items": [{ "component": "MatterSelect", "label": "CM#", "style": { "variant": "ghost", "size": "sm", "radius": "sm" } }] },
+          {
+            "type": "nav",
+            "items": [
+              { "icon": "MessageSquare", "label": "Assistant", "active": true },
+              { "icon": "Folder", "label": "Vault" },
+              { "icon": "Workflow", "label": "Workflows" },
+              { "icon": "Clock", "label": "History" },
+              { "icon": "Library", "label": "Library" }
+            ],
+            "item_style": {
+              "height": 36,
+              "paddingX": 12,
+              "radius": "sm",
+              "hoverBg": "{colors.semantic.bg.tab.hover}",
+              "activeBg": "{colors.semantic.bg.tab.selected}",
+              "text": "{colors.semantic.text.primary}",
+              "icon": "{colors.semantic.icon.primary}"
+            }
+          },
+          { "type": "footer", "items": [
+            { "icon": "HelpCircle", "label": "Help" },
+            { "icon": "Settings", "label": "Settings" },
+            { "icon": "User", "label": "emma@harvey.ai", "style": { "variant": "muted" } }
+          ] }
+        ]
+      },
+      "PageHeader": {
+        "title": { "text": "Assistant", "style": "h1" },
+        "subtitle": { "text": "Ask complex questions to your professional AI assistant", "style": "body", "color": "text.secondary" },
+        "tabs": {
+          "variant": "contained",
+          "items": [
+            { "id": "assist", "label": "Assist", "selected": true, "icon": "Sparkles" },
+            { "id": "draft", "label": "Draft", "selected": false, "icon": "FileText" }
+          ],
+          "styles": {
+            "height": 36,
+            "gap": 8,
+            "radius": "pill",
+            "selected": { "bg": "{colors.semantic.bg.tab.selected}", "text": "{colors.semantic.text.primary}" },
+            "unselected": { "bg": "transparent", "text": "{colors.semantic.text.secondary}" }
+          }
+        },
+        "actions": [{ "type": "textlink", "label": "View tips", "placement": "right" }]
+      },
+      "AssistantPromptArea": {
+        "container": { "bg": "{colors.semantic.bg.card}", "border": "{colors.semantic.border.default}", "radius": "lg", "padding": 16, "shadow": "sm" },
+        "prompt_input": {
+          "placeholder": "Ask QaAI a question with documents or knowledge sources…",
+          "minHeight": 96,
+          "style": { "bg": "{colors.semantic.bg.input}", "text": "{colors.semantic.text.primary}", "placeholder": "{colors.semantic.text.placeholder}", "radius": "md", "border": "transparent", "padding": 12 }
+        },
+        "prompt_toolbar": {
+          "left": [
+            { "type": "button", "variant": "ghost", "label": "Load prompt", "icon": "Download" },
+            { "type": "button", "variant": "ghost", "label": "Save prompt", "icon": "Save" }
+          ],
+          "right": [
+            { "type": "button", "variant": "solid-neutral", "label": "Ask QaAI",
+              "style": { "bg": "{colors.semantic.action.primary.bg}", "text": "{colors.semantic.action.primary.text}", "hoverBg": "{colors.semantic.action.primary.hoverBg}", "activeBg": "{colors.semantic.action.primary.activeBg}", "radius": "md", "height": 36, "paddingX": 14 } }
+          ]
+        },
+        "attachments_row": [
+          {
+            "component": "Dropzone",
+            "label": "Drag or click to upload files",
+            "caption": "Choose files from your computer, a Vault project, SharePoint, or Google Drive",
+            "icon": "Paperclip",
+            "style": { "bg": "{colors.semantic.bg.dropzone}", "border": "{colors.semantic.border.default}", "radius": "md", "padding": 12 }
+          },
+          {
+            "component": "KnowledgeSourcePicker",
+            "label": "Choose knowledge source",
+            "caption": "Cuatrecasas, EDGAR, EUR‑Lex and more",
+            "icon": "Layers",
+            "style": { "bg": "{colors.semantic.bg.badge}", "border": "{colors.semantic.border.default}", "radius": "md", "padding": 12 }
+          }
+        ]
+      },
+      "SectionTabs": {
+        "items": [
+          { "id": "discover", "label": "Discover", "selected": true },
+          { "id": "recent", "label": "Recent" },
+          { "id": "shared", "label": "Shared with you" }
+        ],
+        "style": { "underline_active": true, "underline_color": "{colors.semantic.text.primary}", "gap": 24, "paddingY": 8 }
+      },
+      "WorkflowGallery": {
+        "groups": [{ "title": "For General Work" }, { "title": "For Transactional Work" }],
+        "see_all_link": true,
+        "card": {
+          "width": 260, "minHeight": 140,
+          "bg": "{colors.semantic.bg.card}", "border": "{colors.semantic.border.default}", "radius": "lg", "padding": 16, "shadow": "sm", "hoverShadow": "md",
+          "title_style": { "style": "h2" }, "desc_style": { "style": "caption", "color": "text.muted" },
+          "meta": { "icon": "FileText", "text": "• 1–2 steps" }
+        },
+        "layout": { "columns": 4, "gap": 16, "rowGap": 16 }
+      }
+    },
+    "a11y": {
+      "min_tap_target_px": 40,
+      "contrast_target": "WCAG AA",
+      "keyboard_navigation": true,
+      "focus_visible_style": "{interaction.focus_ring}",
+      "aria_patterns": { "tabs": ["role=tablist", "role=tab", "aria-selected"], "dropzone": ["role=button", "aria-describedby"], "cards": ["role=button", "aria-label"] }
+    },
+    "copy": {
+      "prompts": {
+        "assistant_placeholder": "Ask QaAI a question with documents or knowledge sources…",
+        "dropzone": "Drag or click to upload files",
+        "knowledge_picker": "Choose knowledge source",
+        "ask_button": "Ask QaAI"
+      },
+      "sections": {
+        "discover": "Discover", "recent": "Recent", "shared_with_you": "Shared with you",
+        "for_general_work": "For General Work", "for_transactional_work": "For Transactional Work", "see_all": "See all"
+      }
+    },
+    "example_structure_tree": {
+      "App": {
+        "children": [
+          { "Sidebar": { "sections": ["Brand", "ContextSelector", "Nav", "Footer"] } },
+          { "MainArea": { "children": [
+            { "PageHeader": ["Title", "Subtitle", "Tabs", "TipsLink"] },
+            { "AssistantPromptArea": ["PromptInput", "Toolbar", "AttachmentsRow"] },
+            { "SectionTabs": ["Discover", "Recent", "SharedWithYou"] },
+            { "WorkflowGallery": ["Group: For General Work", "Group: For Transactional Work"] }
+          ] } }
+        ]
+      }
+    }
+  }
+  
