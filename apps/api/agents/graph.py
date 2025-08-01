@@ -43,60 +43,78 @@ class QaAIWorkflowGraph:
         # Create state graph
         self.graph = StateGraph(WorkflowState)
         
-        # Add nodes
+        # Add nodes (avoid conflicts with state keys)
         self.graph.add_node("preflight", preflight)
-        self.graph.add_node("plan", plan)
-        self.graph.add_node("retrieve", retrieve)
-        self.graph.add_node("draft", draft)
-        self.graph.add_node("verify_citations", verify_citations)
-        self.graph.add_node("human_review", human_review)
-        self.graph.add_node("export", export)
+        self.graph.add_node("planner", plan)
+        self.graph.add_node("retriever", retrieve)
+        self.graph.add_node("drafter", draft)
+        self.graph.add_node("verifier", verify_citations)
+        self.graph.add_node("reviewer", human_review)
+        self.graph.add_node("exporter", export)
         
         # Set entry point
         self.graph.set_entry_point("preflight")
         
         # Add edges - deterministic flow
-        self.graph.add_edge("preflight", "plan")
-        self.graph.add_edge("plan", "retrieve")
-        self.graph.add_edge("retrieve", "draft")
-        self.graph.add_edge("draft", "verify_citations")
-        self.graph.add_edge("verify_citations", "human_review")
-        self.graph.add_edge("human_review", "export")
-        self.graph.add_edge("export", END)
+        self.graph.add_edge("preflight", "planner")
+        self.graph.add_edge("planner", "retriever")
+        self.graph.add_edge("retriever", "drafter")
+        self.graph.add_edge("drafter", "verifier")
+        self.graph.add_edge("verifier", "reviewer")
+        self.graph.add_edge("reviewer", "exporter")
+        self.graph.add_edge("exporter", END)
         
         # Add conditional edges for error handling
         self.graph.add_conditional_edges(
             "preflight",
             self._should_continue,
             {
-                "continue": "plan",
+                "continue": "planner",
                 "end": END
             }
         )
         
         self.graph.add_conditional_edges(
-            "plan",
+            "planner",
             self._should_continue,
             {
-                "continue": "retrieve", 
+                "continue": "retriever", 
                 "end": END
             }
         )
         
         self.graph.add_conditional_edges(
-            "retrieve",
+            "retriever",
             self._should_continue,
             {
-                "continue": "draft",
+                "continue": "drafter",
                 "end": END
             }
         )
         
         self.graph.add_conditional_edges(
-            "draft",
+            "drafter",
             self._should_continue,
             {
-                "continue": "verify_citations",
+                "continue": "verifier",
+                "end": END
+            }
+        )
+        
+        self.graph.add_conditional_edges(
+            "verifier",
+            self._should_continue,
+            {
+                "continue": "reviewer",
+                "end": END
+            }
+        )
+        
+        self.graph.add_conditional_edges(
+            "reviewer",
+            self._should_continue,
+            {
+                "continue": "exporter",
                 "end": END
             }
         )
